@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'property',
-    'authapp'
+    'authapp',
      'rest_framework',
     'djoser',
 ]
@@ -60,7 +60,7 @@ ROOT_URLCONF = 'inspection.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -132,13 +132,13 @@ FIXTURE_DIRS = (
     BASE_DIR / 'fixtures',
     )
 
+AUTH_USER_MODEL = 'authapp.User'
+AUTHENTICATION_BACKENDS = ('authapp.backends.EmailBackend')
 #configure DRF
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+       'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ]
+   
 }
 

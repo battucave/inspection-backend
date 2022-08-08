@@ -15,8 +15,25 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+import authapp.urls
+
+from rest_framework.schemas import get_schema_view
+from django.views.generic import TemplateView
 
 urlpatterns = [
+    path('openapi/', get_schema_view(
+        title="Inspection endpoints",
+        description="API endpoints for inspection api"
+    ), name='openapi-schema'),
+
+    path('docs/', TemplateView.as_view(
+        template_name='documentation.html',
+        extra_context={'schema_url':'openapi-schema'}
+    ), name='swagger-ui'),
     path('admin/', admin.site.urls),
-    path('^auth/', include('djoser.urls')),
+    path('api/',include(authapp.urls)),
+    
+    
 ]
+
+
