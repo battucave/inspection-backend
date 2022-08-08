@@ -20,5 +20,10 @@ These details refer only to the development server
     Install requirements if needed
     pip install -r requirements.txt
 
+    To generate property_type fixtures:
+    python manage.py dumpdata property.PropertyType --output fixtures/property_type.json
+
+   To load property_type fixtures
+   python manage.py loaddata property_type
 
     
