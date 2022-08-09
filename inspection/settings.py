@@ -133,12 +133,27 @@ FIXTURE_DIRS = (
     )
 
 AUTH_USER_MODEL = 'authapp.User'
-AUTHENTICATION_BACKENDS = ('authapp.backends.EmailBackend')
+#AUTHENTICATION_BACKENDS = ('authapp.backends.EmailBackend')
 #configure DRF
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    'rest_framework.authentication.SessionAuthentication',
+    'rest_framework.authentication.BasicAuthentication',
     ),
    
 }
 
+# Base url to serve media files
+MEDIA_URL = '/media/'
+
+# Path where media is stored
+MEDIA_ROOT =  BASE_DIR / 'media'
+
+SENDGRID_API_KEY = config('SENDGRID_API_KEY')
+
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey' # this is exactly the value 'apikey'
+EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

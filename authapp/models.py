@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import Group
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
-
+import random
 
 JOB_ROLES = [
     ("OWNER", "Owner"),
@@ -70,4 +70,14 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
-    
+
+
+class VerificationCode(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    code = models.CharField(max_length=10)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        self.code = "".join([str(random.randint(0,9)) for i in range(4)])
+        super(VerificationCode, self).save(*args, **kwargs)
+
