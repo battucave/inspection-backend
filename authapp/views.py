@@ -1,4 +1,4 @@
-from .models import User
+from .models import User,VerificationCode
 from .serializers import UserCreateSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -72,3 +72,25 @@ class DeleteUser(APIView):
             serializer.save(is_active=False)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class VerifyCode(APIView):
+    permission_classes = (IsAuthenticated,)
+    """Check that verify code is correct"""
+    def get(self, request,code):
+        request_user_code = VerificationCode.objects.filter(user=request.user).last()
+        if request_user_code: 
+            code_ = request_user_code.__code
+            if code_ == code:
+                user = User.objects.get(user=request.user)
+                user.is_verified=True
+                user.save()
+                return Response({'result':True},status=status.HTTP_200_OK)
+        return  Response({'result':False},status=status.HTTP_200_OK)
+
+class RefreshVerifyCode(APIView):
+    permission_classes = (IsAuthenticated,)
+    """Check that verify code is correct"""
+    def get(self, request,code):
+        VerificationCode.objects.Create(user=request.user)
+        return Response({'result':True},status=status.HTTP_201_CREATED)
+        
