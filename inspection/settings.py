@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'authapp',
      'rest_framework',
     'djoser',
+    
 ]
 
 MIDDLEWARE = [
@@ -135,11 +136,15 @@ FIXTURE_DIRS = (
 AUTH_USER_MODEL = 'authapp.User'
 #AUTHENTICATION_BACKENDS = ('authapp.backends.EmailBackend')
 #configure DRF
+
+#'DEFAULT_FILTER_BACKENDS': [
+#        'django_filters.rest_framework.DjangoFilterBackend'
+#    ],
 REST_FRAMEWORK = {
+  
     'DEFAULT_AUTHENTICATION_CLASSES': (
        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    'rest_framework.authentication.SessionAuthentication',
-    'rest_framework.authentication.BasicAuthentication',
+    
     ),
    
 }
