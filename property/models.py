@@ -31,7 +31,7 @@ class Property(models.Model):
         "Image", blank=True, through="PropertyImage"
     )
     property_type = models.ForeignKey("PropertyType",on_delete=models.CASCADE)
-    owner = models.ForeignKey(User,on_delete=models.CASCADE,blank=True)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
 
 class Room(models.Model):
     property = models.ForeignKey("Property",on_delete=models.CASCADE)
