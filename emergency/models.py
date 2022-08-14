@@ -10,7 +10,7 @@ EMERGENCY_TYPES = [
 ]
 
 
-class Contact(models.Model):
+class Emergency(models.Model):
     name = models.CharField(max_length=200)
     numbers = models.CharField(max_length=200)
     address = models.CharField(max_length=200)
@@ -18,4 +18,4 @@ class Contact(models.Model):
     state = models.CharField(max_length=20)
     zip_code = models.CharField(max_length=20)
     emergency_type = models.CharField(max_length=20,choices=EMERGENCY_TYPES,null=True)
-    user= models.ForeignKey("User")
+    user= models.ForeignKey(User,on_delete=models.CASCADE)

@@ -17,6 +17,10 @@ from django.contrib import admin
 from django.urls import path,include
 import authapp.urls
 import property.urls
+import mrequest.urls
+import emergency.urls
+import report.urls
+
 
 
 from rest_framework.schemas import get_schema_view
@@ -36,7 +40,9 @@ urlpatterns = [
     
     path('api/',include(authapp.urls)),
     path('api/',include(property.urls)),
-    
+     path('api/',include(emergency.urls)),
+      path('api/',include(mrequest.urls)),
+ path('api/',include(report.urls)),    
     
     
 ]

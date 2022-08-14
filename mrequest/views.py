@@ -4,24 +4,24 @@ from django.http import Http404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import ReportSerializer
-from .models import Report
+from .serializers import MRequestSerializer
+from .models import MRequest
 
-class ReportView(APIView):
+class RequestView(APIView):
     parser_classes = [MultiPartParser, FormParser]
-    serializer_class = ReportSerializer
+    serializer_class = MRequestSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = []
 
 
     def get_object(self, pk):
         try:
-            return Report.objects.get(pk=pk)
-        except Report.DoesNotExist:
+            return MRequest.objects.get(pk=pk)
+        except MRequest.DoesNotExist:
             raise Http404
 
     def post(self, request):
-        serializer = ReportSerializer(data=request.data)
+        serializer = MRequestSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -29,33 +29,33 @@ class ReportView(APIView):
 
     def put(self, request, pk, format=None):
         report = self.get_object(pk)
-        serializer = ReportSerializer(report, data=request.data)
+        serializer = MRequestSerializer(report, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    #TODO check if request user is the Report user
+    #TODO check if request user is the MRequest user
     def delete(self, request, pk, format=None):
         report = self.get_object(pk)
         report.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class GetReportView(APIView):
-    queryset = Report.objects.all()
-    serializer_class = ReportSerializer
+class GetRequestView(APIView):
+    queryset = MRequest.objects.all()
+    serializer_class = MRequestSerializer
     authentication_classes = []
 
     def get_object(self, pk):
         try:
-            return Report.objects.get(pk=pk)
-        except Report.DoesNotExist:
+            return MRequest.objects.get(pk=pk)
+        except MRequest.DoesNotExist:
             raise Http404
     
 
     def get(self,request,pk):
         report = self.get_object(pk)
-        serializer = ReportSerializer(report)
+        serializer = MRequestSerializer(report)
         return Response(serializer.data)
     
     

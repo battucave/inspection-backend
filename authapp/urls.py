@@ -4,10 +4,10 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 
 
-#path('',include('djoser.urls')),
 #    path('',include('djoser.urls.authtoken')),
-#    path('', include('djoser.urls.jwt')),
+
 urlpatterns = [
+path('',include('djoser.urls')),
     
     path('owner/create',views.CreateOwner.as_view()),
     path('maintenance/create',views.CreateMaintenance.as_view()),
@@ -23,5 +23,3 @@ urlpatterns = [
     
 ]
 
-#path('verification/refresh')
-#    path('verification/check')

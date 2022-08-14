@@ -2,12 +2,8 @@ from django.db import models
 from authapp.models import User
 
 
-class Report(models.Model):
-    item = models.CharField(max_length=200)
-    description = models.CharField(max_length=1000)
-    photo = models.ImageField()
-    claimed = models.BooleanField(default= False)
-    claimed_by = models.ManyToManyField("User",blank=True)
+
+    
 
 REQUEST_STATE_CHOICES = [
         ('Open','Open'), 
@@ -18,15 +14,15 @@ REQUEST_TYPE_CHOICES = [
         ('Maintenance','Maintenance'), 
         ('Lost/Found','Lost/Found'),
         ]
-class Request(models.Model):
-    reqeust_type = models.CharField(max_length=10,
+class MRequest(models.Model):
+    reqeust_type = models.CharField(max_length=20,
         choices= REQUEST_TYPE_CHOICES,
         default='Maintenance', blank=True,null=True)
-    request_name = models.CharField()
-    description = models.CharField()
-    user = models.ForeignKey("User",on_delete=models.CASCADE)
+    request_name = models.CharField(max_length=100)
+    description = models.CharField(max_length=400)
+    user = models.ForeignKey(User,on_delete=models.CASCADE,related_name="mrequest_user")
     request_state =  models.CharField(
-        max_length=10,
+        max_length=20,
         choices= REQUEST_STATE_CHOICES,
         default='Open', blank=True,null=True
     )

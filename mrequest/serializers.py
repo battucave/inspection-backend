@@ -1,8 +1,8 @@
-from .models import Report
+from .models import MRequest
 from rest_framework import serializers
 
 
-class ReportSerializer(serializers.ModelSerializer):
+class MRequestSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Report
+        model = MRequest
         fields = "__all__"

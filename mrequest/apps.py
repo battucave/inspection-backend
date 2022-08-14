@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ReportConfig(AppConfig):
+class MRequestConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'report'
+    name = 'mrequest'
