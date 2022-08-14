@@ -76,9 +76,10 @@ class DeleteUser(APIView):
 class VerifyCode(APIView):
     permission_classes = (IsAuthenticated,)
     """Check that verify code is correct"""
-    def get(self, request,code):
+    def post(self, request):
+        code = request.data['code']
         request_user_code = VerificationCode.objects.filter(user=request.user).last()
-        if request_user_code: 
+        if request_user_code and code: 
             code_ = request_user_code.__code
             if code_ == code:
                 user = User.objects.get(user=request.user)
@@ -90,7 +91,7 @@ class VerifyCode(APIView):
 class RefreshVerifyCode(APIView):
     permission_classes = (IsAuthenticated,)
     """Check that verify code is correct"""
-    def get(self, request,code):
+    def get(self, request):
         VerificationCode.objects.Create(user=request.user)
         return Response({'result':True},status=status.HTTP_201_CREATED)
         
