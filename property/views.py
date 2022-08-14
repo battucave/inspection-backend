@@ -62,3 +62,27 @@ class PropertyTypeView(APIView):
         property_types = PropertyType.objects.all()
         property_type_serializer = PropertyTypeSerializer(property_types, many=True)
         return Response(property_type_serializer.data)
+
+
+class PropertySearchView(APIView):
+    queryset = Property.objects.all()
+    serializer_class = PropertySerializer
+    authentication_classes = []
+    
+
+    def get(self,request,q=""):
+        result = Property.objects.filter(name__contains=q)
+        property_serializer = PropertySerializer(result, many=True)
+        return Response(property_serializer.data)
+
+
+class AllProperty(APIView):
+    queryset = Property.objects.all()
+    serializer_class = PropertySerializer
+    authentication_classes = []
+    
+
+    def get(self,request,q=""):
+        result = Property.objects.all()
+        property_serializer = PropertySerializer(result, many=True)
+        return Response(property_serializer.data)
