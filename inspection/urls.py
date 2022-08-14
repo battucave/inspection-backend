@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path,include
 import authapp.urls
 import property.urls
-import link.urls
+
 
 from rest_framework.schemas import get_schema_view
 from django.views.generic import TemplateView
@@ -36,7 +36,7 @@ urlpatterns = [
     
     path('api/',include(authapp.urls)),
     path('api/',include(property.urls)),
-    path('api/',include(link.urls))
+    
     
     
 ]

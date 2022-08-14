@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'authapp',
      'rest_framework',
     'djoser',
+    'report',
     
 ]
 
