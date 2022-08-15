@@ -1,5 +1,5 @@
 from django.db import models
-from authapp import User
+from authapp.models import User
 class Conversation(models.Model):
     user_one = models.ForeignKey(User,related_name = "user_one")
     user_two = models.ForeignKey(User,related_name = "user_two")

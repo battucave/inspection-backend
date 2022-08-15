@@ -21,14 +21,17 @@ class PropertySerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         if 'images' in validated_data.keys():
             images=validated_data.pop('images')
+            photos=[]
             for img in images:
-                photo=Image.objects.create(image=img)
-            return photo
+                temp=Image.objects.create(image=img)
+                photos.append(temp)
+            images =photos
         return validated_data
+    
     class Meta:
         model = Property
         fields = "__all__"
-        read_only_fields = ("id","owner")
+        read_only_fields = ("id","user")
 
 class RoomSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True)

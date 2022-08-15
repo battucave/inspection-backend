@@ -30,6 +30,9 @@ class NewProperty(APIView):
             return Property.objects.get(pk=pk)
         except Property.DoesNotExist:
             raise Http404
+    def get(self,request):
+        serializer = PropertySerializer()
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = PropertySerializer(data=request.data)
