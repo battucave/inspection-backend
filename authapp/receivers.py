@@ -12,4 +12,13 @@ def send_verification_email(sender, instance, **kwargs):
     to_ = user.email
     from_ = 'this@inspection.com'
     message = "Your verification code is {}".format(instance.code)
-    send_mail('Inspection', message, from_, [to_], fail_silently=False)
+    try:
+        send_mail('Inspection', message, from_, [to_], fail_silently=False)
+    except:
+        pass
+
+@receiver(post_save, sender=User)
+def generate_verification_code(sender, instance, **kwargs):
+    if not instance.is_verified:
+        VerificationCode.objects.create(user=instance)
+    

@@ -7,5 +7,6 @@ urlpatterns = [
     path('request/<str:pk>/',views.GetRequestView.as_view()),
     path('request/<str:pk>/',views.RequestView.as_view()),
     path('request/',views.RequestView.as_view()),
+    path('requests/',views.ListReportView.as_view()),
     
 ]

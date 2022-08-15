@@ -8,12 +8,9 @@ from .serializers import ReportSerializer
 from .models import Report
 
 class ReportView(APIView):
-    parser_classes = [MultiPartParser, FormParser]
     serializer_class = ReportSerializer
     permission_classes = (IsAuthenticated,)
     
-
-
     def get_object(self, pk):
         try:
             return Report.objects.get(pk=pk)
@@ -45,10 +42,6 @@ class ReportView(APIView):
 
 
 class GetReportView(APIView):
-    queryset = Report.objects.all()
-    serializer_class = ReportSerializer
-    
-
     def get_object(self, pk):
         try:
             return Report.objects.get(pk=pk)
@@ -60,5 +53,4 @@ class GetReportView(APIView):
         report = self.get_object(pk)
         serializer = ReportSerializer(report)
         return Response(serializer.data)
-    
     

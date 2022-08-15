@@ -60,3 +60,26 @@ class GetRequestView(APIView):
         return Response(serializer.data)
     
     
+class ListReportView(APIView):
+    permission_classes = (IsAuthenticated,)
+    
+    
+
+    def get(self,request,mode=None):
+        if mode == 'open':
+            choice='Open'
+        elif mode == 'close':
+            choice='Close'
+        elif mode == 'progress':
+            choice = 'Work_In_Progress'
+        else:
+            choice =None
+        if choice:
+            mrequests = MRequest.objects.filter(user=request.user,request_state=choice)
+        else:
+            mrequests = MRequest.objects.filter(user=request.user)
+
+        serializer = MRequestSerializer(mrequests)
+        return Response(serializer.data)
+
+    

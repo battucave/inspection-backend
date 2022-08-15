@@ -33,6 +33,9 @@ class Property(models.Model):
     property_type = models.ForeignKey("PropertyType",on_delete=models.CASCADE)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.name
+
 class Room(models.Model):
     property = models.ForeignKey("Property",on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
