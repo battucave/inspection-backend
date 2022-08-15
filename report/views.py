@@ -11,7 +11,7 @@ class ReportView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     serializer_class = ReportSerializer
     permission_classes = (IsAuthenticated,)
-    authentication_classes = []
+    
 
 
     def get_object(self, pk):
@@ -32,19 +32,22 @@ class ReportView(APIView):
         serializer = ReportSerializer(report, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    #TODO check if request user is the Report user
+    
     def delete(self, request, pk, format=None):
         report = self.get_object(pk)
-        report.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if request.user == report.user:
+            report.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 class GetReportView(APIView):
     queryset = Report.objects.all()
     serializer_class = ReportSerializer
-    authentication_classes = []
+    
 
     def get_object(self, pk):
         try:

@@ -79,12 +79,13 @@ class VerifyCode(APIView):
     def post(self, request):
         code = request.data['code']
         request_user_code = VerificationCode.objects.filter(user=request.user).last()
+        #request_user_code = VerificationCode.objects.last()
         if request_user_code and code: 
-            code_ = request_user_code.__code
+            code_ = request_user_code.code
             if code_ == code:
-                user = User.objects.get(user=request.user)
-                user.is_verified=True
-                user.save()
+                #user = User.objects.get(email=request.user)
+                request.user.is_verified=True
+                request.user.save()
                 return Response({'result':True},status=status.HTTP_200_OK)
         return  Response({'result':False},status=status.HTTP_200_OK)
 
@@ -92,6 +93,6 @@ class RefreshVerifyCode(APIView):
     permission_classes = (IsAuthenticated,)
     """Check that verify code is correct"""
     def get(self, request):
-        VerificationCode.objects.Create(user=request.user)
+        VerificationCode.objects.create(user=request.user)
         return Response({'result':True},status=status.HTTP_201_CREATED)
         

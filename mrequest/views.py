@@ -11,7 +11,7 @@ class RequestView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     serializer_class = MRequestSerializer
     permission_classes = (IsAuthenticated,)
-    authentication_classes = []
+    
 
 
     def get_object(self, pk):
@@ -35,16 +35,17 @@ class RequestView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    #TODO check if request user is the MRequest user
     def delete(self, request, pk, format=None):
         report = self.get_object(pk)
-        report.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if request.user == report.user:
+            report.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class GetRequestView(APIView):
     queryset = MRequest.objects.all()
     serializer_class = MRequestSerializer
-    authentication_classes = []
+   
 
     def get_object(self, pk):
         try:
