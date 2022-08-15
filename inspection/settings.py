@@ -144,7 +144,10 @@ AUTH_USER_MODEL = 'authapp.User'
 #        'django_filters.rest_framework.DjangoFilterBackend'
 #    ],
 REST_FRAMEWORK = {
-  
+ 
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+
     'DEFAULT_AUTHENTICATION_CLASSES': (
        'rest_framework_simplejwt.authentication.JWTAuthentication',
     
@@ -166,4 +169,8 @@ EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DJOSER={
-'SEND_ACTIVATION_EMAIL': False}
+'SEND_ACTIVATION_EMAIL': False,
+'SERIALIZERS':{
+    'user':'authapp.serializers.UserCreateSerializer'
+}
+}

@@ -7,16 +7,18 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from django.http import Http404
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Property,PropertyType
 from .serializers import  PropertySerializer,PropertyTypeSerializer
-
+from authapp.permissions import  IsOwner, IsOwnerOrReadOnly
+        
 class NewProperty(APIView):
+    permission_classes = (IsOwnerOrReadOnly,)
     parser_classes = [MultiPartParser, FormParser]
     serializer_class = PropertySerializer
-    permission_classes = (IsAuthenticated,)
+    
     
 
     #def perform_create(self, serializer):
@@ -30,10 +32,11 @@ class NewProperty(APIView):
             return Property.objects.get(pk=pk)
         except Property.DoesNotExist:
             raise Http404
-    def get(self,request):
-        serializer = PropertySerializer()
+    def get(self,request,pk):
+        emergency = self.get_object(pk)
+        serializer = PropertySerializer(emergency)
         return Response(serializer.data,status=status.HTTP_200_OK)
-
+        
     def post(self, request):
         serializer = PropertySerializer(data=request.data)
         if serializer.is_valid():
@@ -49,18 +52,15 @@ class NewProperty(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    #TODO check if request user is the emergency user
+    
     def delete(self, request, pk, format=None):
-        emergency = self.get_object(pk)
-        emergency.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        property = self.get_object(pk)
+        if property.user == request.user:
+            property.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 class PropertyTypeView(APIView):
-    queryset = PropertyType.objects.all()
-    serializer_class = PropertyTypeSerializer
-    authentication_classes = []
-    
-
     def get(self,request):
         property_types = PropertyType.objects.all()
         property_type_serializer = PropertyTypeSerializer(property_types, many=True)
@@ -68,24 +68,24 @@ class PropertyTypeView(APIView):
 
 
 class PropertySearchView(APIView):
-    queryset = Property.objects.all()
-    serializer_class = PropertySerializer
-    authentication_classes = []
-    
-
     def get(self,request,q=""):
+        print(q)
         result = Property.objects.filter(name__contains=q)
         property_serializer = PropertySerializer(result, many=True)
         return Response(property_serializer.data)
 
 
 class AllProperty(APIView):
-    queryset = Property.objects.all()
-    serializer_class = PropertySerializer
-    authentication_classes = []
-    
-
     def get(self,request,q=""):
         result = Property.objects.all()
+        property_serializer = PropertySerializer(result, many=True)
+        return Response(property_serializer.data)
+
+class UserProperty(APIView):
+    permission_classes = (IsAuthenticated,)
+    
+
+    def get(self,request):
+        result = Property.objects.filter(user=request.user)
         property_serializer = PropertySerializer(result, many=True)
         return Response(property_serializer.data)

@@ -8,7 +8,7 @@ class Image(models.Model):
 class PropertyImage(models.Model):
     img = models.ForeignKey("Image", on_delete=models.CASCADE)
     property = models.ForeignKey("Property",on_delete=models.CASCADE)
-    order = models.PositiveIntegerField()
+    order = models.PositiveIntegerField(blank=True,null=True)
     
 
 
@@ -36,5 +36,5 @@ class Property(models.Model):
 class Room(models.Model):
     property = models.ForeignKey("Property",on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    room_images = models.ManyToManyField(  "Image", blank=True, through="RoomImage")
+    images = models.ManyToManyField(  "Image", blank=True, through="RoomImage")
 

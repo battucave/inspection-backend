@@ -4,7 +4,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
 from .models import Property,Image, PropertyType,Room,PropertyImage
-
+from authapp.serializers import UserCreateSerializer
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
@@ -12,21 +12,33 @@ class ImageSerializer(serializers.ModelSerializer):
         
 
 class PropertySerializer(serializers.ModelSerializer):
-    #images = ImageSerializer(many=True)
-    images = serializers.ListField(
+    user = UserCreateSerializer(required=False)
+    images = ImageSerializer(many=True,required=False)
+    imag = serializers.ListField(
                        child=serializers.ImageField( max_length=100000,
                                          allow_empty_file=False,
                                          use_url=False ),required=False
-                                )
+                               )
+
+ 
+
     def create(self, validated_data):
-        if 'images' in validated_data.keys():
-            images=validated_data.pop('images')
-            photos=[]
-            for img in images:
-                temp=Image.objects.create(image=img)
-                photos.append(temp)
-            images =photos
-        return validated_data
+        print(validated_data.keys())
+        if 'imag' in validated_data.keys():
+            images=validated_data.pop('imag')
+        
+        obj = Property.objects.create(**validated_data)
+        if images:
+            for i,img in enumerate(images):
+                    temp=Image.objects.create(image=img)
+                    obj.images.add(temp)
+                    #PropertyImage.objects.create(order=i,img=temp,property=obj)
+                    obj.save()
+        
+        
+        
+        return obj
+        
     
     class Meta:
         model = Property
@@ -34,11 +46,34 @@ class PropertySerializer(serializers.ModelSerializer):
         read_only_fields = ("id","user")
 
 class RoomSerializer(serializers.ModelSerializer):
-    images = ImageSerializer(many=True)
+    user = UserCreateSerializer(required=False)
+    images = ImageSerializer(many=True,required=False)
+    imag = serializers.ListField(
+                       child=serializers.ImageField( max_length=100000,
+                                         allow_empty_file=False,
+                                         use_url=False ),required=False
+                               )
     class Meta:
         model = Room
         fields = "__all__"
-        read_only_fields = ("id","owner")
+        read_only_fields = ("id","user")
+    
+    def create(self, validated_data):
+        print(validated_data.keys())
+        if 'imag' in validated_data.keys():
+            images=validated_data.pop('imag')
+        
+        obj = Room.objects.create(**validated_data)
+        if images:
+            for i,img in enumerate(images):
+                    temp=Image.objects.create(image=img)
+                    obj.images.add(temp)
+                    #PropertyImage.objects.create(order=i,img=temp,property=obj)
+                    obj.save()
+        
+        
+        
+        return obj
 
 class PropertyTypeSerializer(serializers.ModelSerializer):
     class Meta:

@@ -71,6 +71,15 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+    
+    def user_type(self):
+        if self.is_vendor==True:
+            return 'vendor'
+        elif self.is_maintenance==True:
+            return 'maintenance'
+        else:
+            return 'owner'
+        
 
 
 class VerificationCode(models.Model):
