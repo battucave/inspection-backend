@@ -69,14 +69,15 @@ class PropertyTypeView(APIView):
 
 class PropertySearchView(APIView):
     def get(self,request,q=""):
-        print(q)
+        q = self.request.query_params.get('q')
         result = Property.objects.filter(name__contains=q)
         property_serializer = PropertySerializer(result, many=True)
         return Response(property_serializer.data)
 
 
 class AllProperty(APIView):
-    def get(self,request,q=""):
+    def get(self,request):
+        
         result = Property.objects.all()
         property_serializer = PropertySerializer(result, many=True)
         return Response(property_serializer.data)

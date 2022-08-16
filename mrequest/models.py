@@ -9,13 +9,15 @@ REQUEST_STATE_CHOICES = [
         ('Open','Open'), 
         ('Close','Close'),
         ('Work_In_Progress','Work_In_Progress'),
+         ('Pending','Pending'),
+
         ]
 REQUEST_TYPE_CHOICES = [
         ('Maintenance','Maintenance'), 
         ('Lost/Found','Lost/Found'),
         ]
 class MRequest(models.Model):
-    reqeust_type = models.CharField(max_length=20,
+    request_type = models.CharField(max_length=20,
         choices= REQUEST_TYPE_CHOICES,
         default='Maintenance', blank=True,null=True)
     request_name = models.CharField(max_length=100)
@@ -24,5 +26,5 @@ class MRequest(models.Model):
     request_state =  models.CharField(
         max_length=20,
         choices= REQUEST_STATE_CHOICES,
-        default='Open', blank=True,null=True
+        default='Pending', blank=True,null=True
     )

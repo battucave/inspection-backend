@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 from decouple import config
+import datetime
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,7 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['35.178.202.49']
 
 
 # Application definition
@@ -83,6 +84,7 @@ WSGI_APPLICATION = 'inspection.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -90,6 +92,25 @@ DATABASES = {
     }
 }
 
+if not DEBUG:
+    DATABASES = {
+        'default': {
+
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+            'NAME': 'hospital',
+
+            'USER': 'postgresconfa',
+
+            'PASSWORD': 'postgres12#$',
+
+            'HOST': '127.0.0.1',
+
+            'PORT': '5432',
+
+        }
+
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -174,3 +195,16 @@ DJOSER={
     'user':'authapp.serializers.UserCreateSerializer'
 }
 }
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(minutes=360),
+}
+
+
+
+
+
+if not DEBUG:
+    STATIC_ROOT = '/home/inspection/static'
+    MEDIA_ROOT= '/var/www/media'

@@ -8,7 +8,6 @@ from .serializers import MRequestSerializer
 from .models import MRequest
 
 class RequestView(APIView):
-    parser_classes = [MultiPartParser, FormParser]
     serializer_class = MRequestSerializer
     permission_classes = (IsAuthenticated,)
     
@@ -23,8 +22,8 @@ class RequestView(APIView):
     def post(self, request):
         serializer = MRequestSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(owner=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):
@@ -65,21 +64,25 @@ class ListReportView(APIView):
     
     
 
-    def get(self,request,mode=None):
+    def get(self,request):
+        mode = self.request.query_params.get('mode')
         if mode == 'open':
             choice='Open'
         elif mode == 'close':
             choice='Close'
         elif mode == 'progress':
             choice = 'Work_In_Progress'
+        elif mode == 'pending':
+            choice = 'Pending'
         else:
             choice =None
+        print(mode)
         if choice:
             mrequests = MRequest.objects.filter(user=request.user,request_state=choice)
         else:
             mrequests = MRequest.objects.filter(user=request.user)
-
-        serializer = MRequestSerializer(mrequests)
+        print(mrequests)
+        serializer = MRequestSerializer(mrequests,many=True)
         return Response(serializer.data)
 
     
