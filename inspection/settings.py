@@ -28,7 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['35.178.202.49']
+ALLOWED_HOSTS = ['35.178.202.49','127.0.0.1']
 
 
 # Application definition
@@ -192,7 +192,8 @@ EMAIL_USE_TLS = True
 DJOSER={
 'SEND_ACTIVATION_EMAIL': False,
 'SERIALIZERS':{
-    'user':'authapp.serializers.UserCreateSerializer'
+    'user':'authapp.serializers.UserCreateSerializer',
+    'current_user':'authapp.serializers.UserCreateSerializer'
 }
 }
 

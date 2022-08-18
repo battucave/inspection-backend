@@ -9,9 +9,9 @@ import random
 import datetime
 
 JOB_ROLES = [
-    ("OWNER", "Owner"),
-    ("MAINTENANCE", "Maintenance"),
-    ("VENDOR", "Vendor"),
+    ("owner", "owner"),
+    ("maintenance", "maintenance"),
+    ("vendor", "vendor"),
     
 ]
 
@@ -58,11 +58,8 @@ class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
-    role = models.CharField(max_length=100, choices=JOB_ROLES, null=True)
+    user_type = models.CharField(max_length=100, choices=JOB_ROLES, null=True)
     is_verified = models.BooleanField(default=False)
-    is_vendor = models.BooleanField(default=False)
-    is_maintenance = models.BooleanField(default=False)
-    is_owner = models.BooleanField(default=False)
     full_name = models.CharField(max_length=100, null=True, blank=True)
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
@@ -72,13 +69,21 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
     
-    def user_type(self):
-        if self.is_vendor==True:
-            return 'vendor'
-        elif self.is_maintenance==True:
-            return 'maintenance'
-        else:
-            return 'owner'
+    def is_vendor(self):
+        if self.id:
+            return self.user_type == 'vendor'
+        return False
+    
+    def is_owner(self):
+        if self.id:
+            return self.user_type == 'owner'
+        return False
+
+    def is_maintenance(self):
+        if self.id:
+            return self.user_type == 'maintenance'
+        return False
+    
         
 
 
