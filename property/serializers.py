@@ -10,7 +10,11 @@ class ImageSerializer(serializers.ModelSerializer):
         model = Image
         fields = "__all__"
         
-
+class PropertyTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PropertyType
+        fields = "__all__"
+        
 class PropertySerializer(serializers.ModelSerializer):
     user = UserCreateSerializer(required=False)
     images = ImageSerializer(many=True,required=False)
@@ -19,20 +23,21 @@ class PropertySerializer(serializers.ModelSerializer):
                                          allow_empty_file=False,
                                          use_url=False ),required=False
                                )
+    property_type_name = serializers.ReadOnlyField(source='property_type.name')
 
  
 
     def create(self, validated_data):
-        print(validated_data.keys())
         if 'imag' in validated_data.keys():
             images=validated_data.pop('imag')
+        else:
+            images =None
         
         obj = Property.objects.create(**validated_data)
         if images:
             for i,img in enumerate(images):
                     temp=Image.objects.create(image=img)
                     obj.images.add(temp)
-                    #PropertyImage.objects.create(order=i,img=temp,property=obj)
                     obj.save()
         
         
@@ -46,8 +51,8 @@ class PropertySerializer(serializers.ModelSerializer):
         read_only_fields = ("id","user")
 
 class RoomSerializer(serializers.ModelSerializer):
-    user = UserCreateSerializer(required=False)
     images = ImageSerializer(many=True,required=False)
+    property = PropertySerializer(required = False)
     imag = serializers.ListField(
                        child=serializers.ImageField( max_length=100000,
                                          allow_empty_file=False,
@@ -59,26 +64,23 @@ class RoomSerializer(serializers.ModelSerializer):
         read_only_fields = ("id","user")
     
     def create(self, validated_data):
-        print(validated_data.keys())
         if 'imag' in validated_data.keys():
             images=validated_data.pop('imag')
+        else:
+            imag=None
         
         obj = Room.objects.create(**validated_data)
         if images:
             for i,img in enumerate(images):
                     temp=Image.objects.create(image=img)
                     obj.images.add(temp)
-                    #PropertyImage.objects.create(order=i,img=temp,property=obj)
                     obj.save()
         
         
         
         return obj
 
-class PropertyTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PropertyType
-        fields = "__all__"
+
 
 """   
 from django.core.files import File

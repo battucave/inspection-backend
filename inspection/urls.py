@@ -43,7 +43,6 @@ urlpatterns = [
      path('api/',include(emergency.urls)),
       path('api/',include(mrequest.urls)),
  path('api/',include(report.urls)),   
- path('api/user/property/', property_view.UserProperty.as_view()) 
     
     
 ]

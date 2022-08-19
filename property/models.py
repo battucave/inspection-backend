@@ -15,7 +15,7 @@ class PropertyImage(models.Model):
 class RoomImage(models.Model):
     img = models.ForeignKey("Image", on_delete=models.CASCADE)
     room = models.ForeignKey("Room",on_delete=models.CASCADE)
-    order = models.PositiveIntegerField()
+    order = models.PositiveIntegerField(blank=True,null=True)
 
 class PropertyType(models.Model):
     name = models.CharField(max_length=100)
@@ -35,6 +35,8 @@ class Property(models.Model):
 
     def __str__(self):
         return self.name
+    class Meta:
+        verbose_name_plural = "Properties"
 
 class Room(models.Model):
     property = models.ForeignKey("Property",on_delete=models.CASCADE)

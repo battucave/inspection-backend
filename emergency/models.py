@@ -19,3 +19,6 @@ class Emergency(models.Model):
     zip_code = models.CharField(max_length=20)
     emergency_type = models.CharField(max_length=20,choices=EMERGENCY_TYPES,null=True)
     user= models.ForeignKey(User,on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "Emergencies"
