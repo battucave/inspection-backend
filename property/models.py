@@ -39,6 +39,7 @@ class Property(models.Model):
         return self.name
     class Meta:
         verbose_name_plural = "Properties"
+    
 
 class Room(models.Model):
     property = models.ForeignKey("Property",on_delete=models.CASCADE)

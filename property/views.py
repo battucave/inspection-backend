@@ -17,24 +17,28 @@ from authapp.models import User
 from rest_framework import filters 
 from rest_framework.pagination import LimitOffsetPagination 
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.decorators import action
 
 class NewProperty(APIView):
     """Create,Update,Delete for single property"""
     permission_classes = (IsOwnerOrReadOnly,)
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = (MultiPartParser, FormParser,)
     serializer_class = PropertySerializer
-    
+    def get_parsers(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return []
+
+        return super().get_parsers()
 
     def get_object(self, pk):
         try:
             return Property.objects.get(pk=pk)
         except Property.DoesNotExist:
             raise Http404
-    def get(self,request,pk):
-        emergency = self.get_object(pk)
-        serializer = PropertySerializer(emergency)
-        return Response(serializer.data,status=status.HTTP_200_OK)
-        
+   
+    #@action(detail=False, methods=['post'], parser_classes=(FormParser, ))
+    #@swagger_auto_schema(request_body=PropertySerializer)
     def post(self, request):
         serializer = PropertySerializer(data=request.data)
         if serializer.is_valid():
@@ -42,7 +46,33 @@ class NewProperty(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    
+
+class GetProperty(APIView):
+    """Update,Delete for single property"""
+    permission_classes = (IsOwnerOrReadOnly,)
+    parser_classes = (MultiPartParser, FormParser,)
+    serializer_class = PropertySerializer
+    def get_parsers(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return []
+
+        return super().get_parsers()
+
+    def get_object(self, pk):
+        try:
+            return Property.objects.get(pk=pk)
+        except Property.DoesNotExist:
+            raise Http404
+    def get(self,request,pk):
+        """Return single property"""
+        emergency = self.get_object(pk)
+        serializer = PropertySerializer(emergency)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+    
     def put(self, request, pk, format=None):
+        """Update property"""
         emergency = self.get_object(pk)
         serializer = PropertySerializer(emergency, data=request.data)
         print(serializer)
@@ -53,6 +83,7 @@ class NewProperty(APIView):
     
     
     def delete(self, request, pk, format=None):
+        """Delete Property"""
         property = self.get_object(pk)
         if property.user == request.user:
             property.delete()
@@ -205,7 +236,7 @@ class NewPropertyApplication(APIView):
             return Property.objects.get(pk=pk)
         except Property.DoesNotExist:
             raise Http404
-        
+    #@swagger_auto_schema(request_body=PropertyApplicationSerializer)
     def post(self, request,pk):
         try:
             property =Property.objects.get(pk=pk)

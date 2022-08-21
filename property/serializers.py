@@ -49,6 +49,12 @@ class PropertySerializer(serializers.ModelSerializer):
         model = Property
         fields = "__all__"
         read_only_fields = ("id","user")
+    
+    def get_parsers(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return []
+
+        return super().get_parsers()
 
 class RoomSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True,required=False)
@@ -81,6 +87,11 @@ class RoomSerializer(serializers.ModelSerializer):
         return obj
 
 class PropertyApplicationSerializer(serializers.ModelSerializer):
+    docs = serializers.ListField(
+                       child=serializers.FileField( max_length=100000,
+                                         allow_empty_file=False,
+                                         use_url=False ),required=False
+                               )
     class Meta:
         model = PropertyApplication
         fields = "__all__"
