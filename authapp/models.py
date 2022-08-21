@@ -59,6 +59,7 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
     user_type = models.CharField(max_length=100, choices=JOB_ROLES, null=True)
+    profile_picture = models.ImageField(upload_to='profile',blank=True,null=True)
     is_verified = models.BooleanField(default=False)
     full_name = models.CharField(max_length=100, null=True, blank=True)
     objects = CustomUserManager()

@@ -6,19 +6,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import EmergencySerializer
 from .models import Emergency
+from authapp.models import User
 
 class EmergencyView(APIView):
-    parser_classes = [MultiPartParser, FormParser]
+    
     serializer_class = EmergencySerializer
     permission_classes = (IsAuthenticated,)
-    authentication_classes = []
+    
 
-    #def perform_create(self, serializer):
-    #    obj = serializer.save()
-    #    for f in self.request.data.getlist('files'):
-    #        mf = MyFile.objects.create(file=f)
-    #        obj.files.add(mf)
-
+  
     def get_object(self, pk):
         try:
             return Emergency.objects.get(pk=pk)
@@ -27,29 +23,36 @@ class EmergencyView(APIView):
 
     def post(self, request):
         serializer = EmergencySerializer(data=request.data)
+        print(request.user.user_type)
+        if request.user.user_type=='maintenance':
+            raise Http404("Permission denied")
         if serializer.is_valid():
-            serializer.save(owner=request.user)
+            serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):
         emergency = self.get_object(pk)
+        if request.user != emergency.user:
+            raise Http404
         serializer = EmergencySerializer(emergency, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    #TODO check if request user is the emergency user
     def delete(self, request, pk, format=None):
         emergency = self.get_object(pk)
-        emergency.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if request.user == emergency.user:
+            emergency.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
 
 class GetEmergencyView(APIView):
     queryset = Emergency.objects.all()
     serializer_class = EmergencySerializer
-    authentication_classes = []
+    
 
     def get_object(self, pk):
         try:
@@ -63,4 +66,18 @@ class GetEmergencyView(APIView):
         serializer = EmergencySerializer(emergency)
         return Response(serializer.data)
     
+
+class GetUserEmergency(APIView):
+    """Return emergency contacts of the user with the pk"""
+    permission_classes = (IsAuthenticated,)
     
+
+    def get(self,request,pk):
+        try:
+            user = User.objects.get(pk=pk)
+        except:
+            user = None
+
+        result = Emergency.objects.filter(user=user)
+        emergency_serializer = EmergencySerializer(result, many=True)
+        return Response(emergency_serializer.data)

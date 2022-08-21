@@ -3,7 +3,7 @@ from django.db import IntegrityError
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
-from .models import Property,Image, PropertyType,Room,PropertyImage
+from .models import Property,Image, PropertyType,Room,PropertyImage,PropertyApplication,Documents
 from authapp.serializers import UserCreateSerializer
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -67,7 +67,7 @@ class RoomSerializer(serializers.ModelSerializer):
         if 'imag' in validated_data.keys():
             images=validated_data.pop('imag')
         else:
-            imag=None
+            images=None
         
         obj = Room.objects.create(**validated_data)
         if images:
@@ -80,7 +80,27 @@ class RoomSerializer(serializers.ModelSerializer):
         
         return obj
 
-
+class PropertyApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PropertyApplication
+        fields = "__all__"
+    
+    def create(self, validated_data):
+        if 'docs' in validated_data.keys():
+            docs=validated_data.pop('docs')
+        else:
+            docs =None
+        
+        obj = Property.objects.create(**validated_data)
+        if docs:
+            for i,doc in enumerate(docs):
+                    temp=Documents.objects.create(document=doc)
+                    obj.documents.add(temp)
+                    obj.save()
+        
+        
+        
+        return obj
 
 """   
 from django.core.files import File

@@ -6,6 +6,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import MRequestSerializer
 from .models import MRequest
+from authapp.models import User
+from rest_framework import generics
+from rest_framework import filters 
+from django_filters.rest_framework import DjangoFilterBackend
 
 class RequestView(APIView):
     serializer_class = MRequestSerializer
@@ -85,4 +89,13 @@ class ListReportView(APIView):
         serializer = MRequestSerializer(mrequests,many=True)
         return Response(serializer.data)
 
+class GetRequestList(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self,request):
+        get_data = request.query_params
+        queryset = MRequest.objects.filter( user=request.user,request_state=get_data['request_state'])
+        serializer = MRequestSerializer(queryset,many=True)
+        return Response(serializer.data)
+    
     

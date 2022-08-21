@@ -7,4 +7,5 @@ class UserCreateSerializer(UserCreateSerializer):
         model = User
         fields = ('id','full_name', 'email','phone','password','user_type','is_verified')
         read_only = ('user_type','is_verified')
+        ref_name = "AuthappUserCreateSerializer"
 

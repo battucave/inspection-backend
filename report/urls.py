@@ -5,7 +5,10 @@ urlpatterns = [
 
 
     path('report/<str:pk>/',views.GetReportView.as_view()),
-    path('report/<str:pk>/',views.ReportView.as_view()),
-    path('report/',views.ReportView.as_view()),
+    path('reports/',views.GetReportList.as_view())
+    
     
 ]
+
+#path('<str:pk>/reports/',views.GetReportList.as_view())
+    

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'property',
     'authapp',
      'rest_framework',
@@ -47,6 +48,8 @@ INSTALLED_APPS = [
     'report',
     'emergency',
     'mrequest',
+    'messaging',
+    'drf_yasg',
     
 ]
 
@@ -173,7 +176,20 @@ REST_FRAMEWORK = {
        'rest_framework_simplejwt.authentication.JWTAuthentication',
     
     ),
+    'DEFAULT_SCHEMA_CLASS':   'rest_framework.schemas.coreapi.AutoSchema',
    
+}
+
+
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
 }
 
 # Base url to serve media files
