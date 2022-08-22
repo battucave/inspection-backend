@@ -2,9 +2,13 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-
 from .models import Property,Image, PropertyType,Room,PropertyImage,PropertyApplication,Documents
 from authapp.serializers import UserCreateSerializer
+
+class DocumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Documents
+        fields = "__all__"
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
@@ -87,6 +91,7 @@ class RoomSerializer(serializers.ModelSerializer):
         return obj
 
 class PropertyApplicationSerializer(serializers.ModelSerializer):
+    documents = DocumentSerializer(many=True,required=False)
     docs = serializers.ListField(
                        child=serializers.FileField( max_length=100000,
                                          allow_empty_file=False,
@@ -102,8 +107,9 @@ class PropertyApplicationSerializer(serializers.ModelSerializer):
         else:
             docs =None
         
-        obj = Property.objects.create(**validated_data)
-        if docs:
+        
+        obj = PropertyApplication.objects.create(**validated_data)
+        if docs and obj:
             for i,doc in enumerate(docs):
                     temp=Documents.objects.create(document=doc)
                     obj.documents.add(temp)

@@ -6,7 +6,7 @@ class Image(models.Model):
     
 class Documents(models.Model):
     document = models.FileField(upload_to='documents',blank=True,null=True)
-
+    
 class PropertyImage(models.Model):
     img = models.ForeignKey("Image", on_delete=models.CASCADE)
     property = models.ForeignKey("Property",on_delete=models.CASCADE)
@@ -55,10 +55,10 @@ APPLICATION_STATE = [
 ]
 
 class PropertyApplication(models.Model):
-    owner = models.ForeignKey(User, related_name="property_owner",on_delete=models.CASCADE)
-    tenant = models.ForeignKey(User,related_name="property_tenant",on_delete=models.CASCADE)
-    property = models.ForeignKey(Property,related_name="property_application" ,on_delete=models.CASCADE)
-    state = models.CharField(max_length=100, choices=APPLICATION_STATE, null=True)
+    owner = models.ForeignKey(User, related_name="property_owner",on_delete=models.CASCADE,blank=True,null=True)
+    tenant = models.ForeignKey(User,related_name="property_tenant",on_delete=models.CASCADE,blank=True,null=True)
+    property = models.ForeignKey(Property,related_name="property_application" ,on_delete=models.CASCADE,blank=True,null=True)
+    state = models.CharField(max_length=100, choices=APPLICATION_STATE,blank=True ,null=True)
     documents = models.ManyToManyField(
-        "Documents", blank=True
+        "Documents", blank=True,null=True
     )

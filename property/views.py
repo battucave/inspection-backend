@@ -125,7 +125,7 @@ class UserProperty(APIView, LimitOffsetPagination):
         properties = Property.objects.filter(user=request.user)
         results = self.paginate_queryset(properties, request, view=self)
         property_serializer = PropertySerializer(results, many=True)
-        return Response(property_serializer.data)
+        return self.get_paginated_response(property_serializer.data)
 
 class GetUserProperty(APIView):
     """Return properties of the user with the pk"""
@@ -141,7 +141,7 @@ class GetUserProperty(APIView):
         properties = Property.objects.filter(user=user)
         results = self.paginate_queryset(properties, request, view=self)
         property_serializer = PropertySerializer(results, many=True)
-        return Response(property_serializer.data)
+        return self.get_paginated_response(property_serializer.data)
 
     
 class NewRoom(APIView):
@@ -262,6 +262,7 @@ class PropertyApplicationUpdate(APIView):
             raise Http404
         
     def put(self, request,pk):
+        """Only owner can edit property application"""
         try:
             property =PropertyApplication.objects.get(pk=pk)
         except PropertyApplication.DoesNotExist:
@@ -282,4 +283,4 @@ class PropertyApplications(generics.ListAPIView):
     #filter_backends = [filters.SearchFilter]
     #search_fields = ['owner', 'tenant','state']
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['owner', 'tenant','state']
+    filterset_fields = ['owner__id', 'tenant__id','state']
