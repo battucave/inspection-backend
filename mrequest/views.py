@@ -12,6 +12,7 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 class RequestView(APIView):
+    """Tenant living in a property can make a maintenance request"""
     serializer_class = MRequestSerializer
     permission_classes = (IsAuthenticated,)
     

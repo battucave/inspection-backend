@@ -1,7 +1,6 @@
 from django.db import models
 from authapp.models import User
-
-
+from property.models import Property
 
     
 
@@ -20,11 +19,14 @@ class MRequest(models.Model):
     request_type = models.CharField(max_length=20,
         choices= REQUEST_TYPE_CHOICES,
         default='Maintenance', blank=True,null=True)
-    request_name = models.CharField(max_length=100)
-    description = models.CharField(max_length=400)
+    request_name = models.CharField(max_length=200)
+    description = models.CharField(max_length=100)
     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name="mrequest_user")
     request_state =  models.CharField(
         max_length=20,
         choices= REQUEST_STATE_CHOICES,
         default='Pending', blank=True,null=True
     )
+    property = models.ForeignKey(Property,related_name="property_request",blank=True,null=True,on_delete=models.CASCADE)
+
+#property owner must be able to manage requests
