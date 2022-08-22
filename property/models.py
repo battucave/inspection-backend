@@ -1,11 +1,16 @@
 from django.db import models
 from authapp.models import User
+from django.core.exceptions import ValidationError
+
+def validate_file_extension(value):
+    if not value.name.endswith('.pdf'):
+        raise ValidationError(u'Error message')
 
 class Image(models.Model):
     image = models.ImageField(upload_to='thumbnails',blank=True,null=True)
     
 class Documents(models.Model):
-    document = models.FileField(upload_to='documents',blank=True,null=True)
+    document = models.FileField(upload_to='documents',blank=True,null=True,validators=[validate_file_extension])
     
 class PropertyImage(models.Model):
     img = models.ForeignKey("Image", on_delete=models.CASCADE)
