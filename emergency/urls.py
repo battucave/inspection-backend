@@ -1,9 +1,11 @@
 from django.urls import path
 from . import views
 urlpatterns = [
-      path('contact/create/',views.EmergencyView.as_view()),
-    path('contact/',views.GetEmergencyView.as_view()),
-    path('contact/<str:pk>/',views.EmergencyView.as_view()),
+   path('contacts/',views.ListUserEmergency.as_view()),
+    path('contact/create/',views.NewEmergencyView.as_view()),
+    path('contact/',views.ListUserEmergency.as_view()),
+    path('contact/<str:pk>/',views.GetEmergencyView.as_view()),
+   
   
 
 ]

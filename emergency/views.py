@@ -7,14 +7,13 @@ from rest_framework import status
 from .serializers import EmergencySerializer
 from .models import Emergency
 from authapp.models import User
+from rest_framework.pagination import LimitOffsetPagination 
 
-class EmergencyView(APIView):
-    
+class NewEmergencyView(APIView):
+    """Only owner and vendor can create emergency contact"""
     serializer_class = EmergencySerializer
     permission_classes = (IsAuthenticated,)
     
-
-  
     def get_object(self, pk):
         try:
             return Emergency.objects.get(pk=pk)
@@ -31,6 +30,26 @@ class EmergencyView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+class GetEmergencyView(APIView):
+    """Only owner and vendor can create emergency contact"""
+    serializer_class = EmergencySerializer
+    permission_classes = (IsAuthenticated,)
+    
+    
+    def get_object(self, pk):
+        try:
+            return Emergency.objects.get(pk=pk)
+        except Emergency.DoesNotExist:
+            raise Http404
+    
+
+    def get(self,request,pk):
+        emergency = self.get_object(pk)
+        serializer = EmergencySerializer(emergency)
+        return Response(serializer.data)
+    
     def put(self, request, pk, format=None):
         emergency = self.get_object(pk)
         if request.user != emergency.user:
@@ -47,37 +66,18 @@ class EmergencyView(APIView):
             emergency.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-
-class GetEmergencyView(APIView):
-    queryset = Emergency.objects.all()
-    serializer_class = EmergencySerializer
     
 
-    def get_object(self, pk):
-        try:
-            return Emergency.objects.get(pk=pk)
-        except Emergency.DoesNotExist:
-            raise Http404
+
+
+
+class ListUserEmergency(APIView, LimitOffsetPagination):
+    """Return emergency contacts of the user"""
+    #permission_classes = (IsAuthenticated,)
     
 
-    def get(self,request,pk):
-        emergency = self.get_object(pk)
-        serializer = EmergencySerializer(emergency)
-        return Response(serializer.data)
-    
-
-class GetUserEmergency(APIView):
-    """Return emergency contacts of the user with the pk"""
-    permission_classes = (IsAuthenticated,)
-    
-
-    def get(self,request,pk):
-        try:
-            user = User.objects.get(pk=pk)
-        except:
-            user = None
-
-        result = Emergency.objects.filter(user=user)
-        emergency_serializer = EmergencySerializer(result, many=True)
-        return Response(emergency_serializer.data)
+    def get(self,request):
+        emergency = Emergency.objects.filter(user=request.user)
+        results = self.paginate_queryset(emergency, request, view=self)
+        property_serializer = EmergencySerializer(results, many=True)
+        return self.get_paginated_response(property_serializer.data)
