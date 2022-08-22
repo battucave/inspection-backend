@@ -60,5 +60,5 @@ class PropertyApplication(models.Model):
     property = models.ForeignKey(Property,related_name="property_application" ,on_delete=models.CASCADE,blank=True,null=True)
     state = models.CharField(max_length=100, choices=APPLICATION_STATE,blank=True ,null=True)
     documents = models.ManyToManyField(
-        "Documents", blank=True,null=True
+        "Documents", blank=True,
     )

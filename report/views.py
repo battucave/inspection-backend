@@ -83,6 +83,21 @@ class GetUserReportList(generics.ListAPIView):
     """Return all the reports of the user with the pk"""
     serializer_class = ReportSerializer
     filter_backends = [DjangoFilterBackend]
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return Report.objects.filter(user=self.request.user)
+        pk = self.kwargs['pk']
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+        return Report.objects.filter(user=user)
+
+
+class ListReports(generics.ListAPIView):
+    """Return all the reports"""
+    serializer_class = ReportSerializer
+    filter_backends = [DjangoFilterBackend]
+    permission_classes = (IsAuthenticated,)
+    queryset = Report.objects.all()
