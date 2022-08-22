@@ -1,7 +1,6 @@
 from django.db import models
 from authapp.models import User
 from django.db.models import Q
-from django.utils.translation import gettext_lazy as _
 from typing import Optional, Any
 import uuid
 
@@ -35,7 +34,7 @@ class ConversationsModel(models.Model):
   
 
     def __str__(self):
-        return _("Dialog between ") + f"{self.user_one_id}, {self.user_two_id}"
+        return ("Dialog between ") + f"{self.user_one_id}, {self.user_two_id}"
 
     @staticmethod
     def dialog_exists(u1: User, u2: User) -> Optional[Any]:
@@ -54,10 +53,10 @@ class ConversationsModel(models.Model):
 
 class UploadedFile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("Uploaded_by"),
+    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=("Uploaded_by"),
                                     related_name='+', db_index=True)
-    file = models.FileField(verbose_name=_("File"), blank=False, null=False, upload_to=user_directory_path)
-    upload_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Upload date"))
+    file = models.FileField(verbose_name=("File"), blank=False, null=False, upload_to=user_directory_path)
+    upload_date = models.DateTimeField(auto_now_add=True, verbose_name=("Upload date"))
 
     def __str__(self):
         return str(self.file.name)
@@ -67,9 +66,9 @@ class MessageModel(models.Model):
     conversation = models.ForeignKey(ConversationsModel,on_delete=models.CASCADE)
     sender = models.ForeignKey(User, related_name="message_sender",on_delete=models.CASCADE,blank=True,null=True)
     recipient = models.ForeignKey(User, related_name="message_recipient", on_delete=models.CASCADE,blank=True,null=True)
-    text = models.TextField(verbose_name=_("Text"), blank=True)
+    text = models.TextField(verbose_name=("Text"), blank=True)
     file = models.ForeignKey(UploadedFile, related_name='message', on_delete=models.DO_NOTHING,
-                             verbose_name=_("File"), blank=True, null=True)
+                             verbose_name=("File"), blank=True, null=True)
 
     @staticmethod
     def get_unread_count_for_dialog_with_user(sender, recipient):
@@ -90,8 +89,8 @@ class MessageModel(models.Model):
 
     class Meta:
         ordering = ('-created',)
-        verbose_name = _("Message")
-        verbose_name_plural = _("Messages")
+        verbose_name = ("Message")
+        verbose_name_plural = ("Messages")
 
 
 #Conversation.objects.filter(Q(user_one=b,user_two=a)|Q(user_one=a,user_two=b)) 
