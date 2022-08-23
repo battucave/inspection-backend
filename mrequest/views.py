@@ -10,7 +10,9 @@ from authapp.models import User
 from rest_framework import generics
 from rest_framework import filters 
 from django_filters.rest_framework import DjangoFilterBackend
+from property.models import Property
 
+from rest_framework.pagination import LimitOffsetPagination
 class RequestView(APIView):
     """Tenant living in a property can make a maintenance request"""
     serializer_class = MRequestSerializer
@@ -24,14 +26,22 @@ class RequestView(APIView):
         except MRequest.DoesNotExist:
             raise Http404
 
-    def post(self, request):
-        serializer = MRequestSerializer(data=request.data)
+    def post(self, request,pk):
+        try:
+            property = Property.objects.get(pk=pk)
+        except:
+            raise Http404
+        if property.property_application.filter(tenant =request.user,state='approved'):
+            serializer = MRequestSerializer(data=request.data)
+        else:
+            raise Http404
         if serializer.is_valid():
-            serializer.save(user=request.user)
+            serializer.save(user=request.user,property=property)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):
+        """Only owner of property can update request"""
         report = self.get_object(pk)
         serializer = MRequestSerializer(report, data=request.data)
         if serializer.is_valid():
@@ -40,14 +50,15 @@ class RequestView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, pk, format=None):
-        report = self.get_object(pk)
-        if request.user == report.user:
-            report.delete()
+        """Requestcreator can update request"""
+        mrequest = self.get_object(pk)
+        if request.user == mrequest.user:
+            mrequest.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class GetRequestView(APIView):
-    queryset = MRequest.objects.all()
+    permission_classes = (IsAuthenticated,)
     serializer_class = MRequestSerializer
    
 
@@ -63,40 +74,14 @@ class GetRequestView(APIView):
         serializer = MRequestSerializer(report)
         return Response(serializer.data)
     
-    
-class ListReportView(APIView):
+
+class ListRequestView(generics.ListAPIView):
+    """List MRequest """
     permission_classes = (IsAuthenticated,)
-    
-    
+    queryset = MRequest.objects.all()
+    serializer_class = MRequestSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['user__id', 'request_state','request_type','property__id']
 
-    def get(self,request):
-        mode = self.request.query_params.get('mode')
-        if mode == 'open':
-            choice='Open'
-        elif mode == 'close':
-            choice='Close'
-        elif mode == 'progress':
-            choice = 'Work_In_Progress'
-        elif mode == 'pending':
-            choice = 'Pending'
-        else:
-            choice =None
-        print(mode)
-        if choice:
-            mrequests = MRequest.objects.filter(user=request.user,request_state=choice)
-        else:
-            mrequests = MRequest.objects.filter(user=request.user)
-        print(mrequests)
-        serializer = MRequestSerializer(mrequests,many=True)
-        return Response(serializer.data)
 
-class GetRequestList(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get(self,request):
-        get_data = request.query_params
-        queryset = MRequest.objects.filter( user=request.user,request_state=get_data['request_state'])
-        serializer = MRequestSerializer(queryset,many=True)
-        return Response(serializer.data)
-    
     

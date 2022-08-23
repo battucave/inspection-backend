@@ -223,8 +223,8 @@ SIMPLE_JWT = {
 
 
 if not DEBUG:
-    STATIC_ROOT = '/home/inspection/static'
+    STATIC_ROOT = '/home/ubuntu/static'
     MEDIA_ROOT= '/home/ubuntu/media'
 
-STATIC_ROOT = '/home/inspection/static'
+STATIC_ROOT = '/home/ubuntu/static'
 MEDIA_ROOT= '/home/ubuntu/media'

@@ -284,3 +284,17 @@ class PropertyApplications(generics.ListAPIView):
     #search_fields = ['owner', 'tenant','state']
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['owner__id', 'tenant__id','state']
+
+class ListTenantProperties(APIView,LimitOffsetPagination):
+    permission_classes = (IsAuthenticated,)
+    """Return properties where the request user is an approved tenant"""
+    def get(self,request):
+        properties = Property.objects.filter(property_application__tenant =request.user,property_application__state='approved') 
+        results = self.paginate_queryset(properties, request, view=self)
+        property_serializer = PropertySerializer(results, many=True)
+        return self.get_paginated_response(property_serializer.data)
+
+#>>> Property.objects.filter(property_application__tenant =f,property_application__state='approved') 
+#>>> Property.objects.filter(property_application__tenant =f,property_application__state='pending')
+
+#An owner might want to list tenants

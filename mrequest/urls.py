@@ -1,12 +1,8 @@
 from django.urls import path
 from . import views
 urlpatterns = [
-    path('request/create/',views.RequestView.as_view()),
-
-
+    path('request/create/<str:pk>/',views.RequestView.as_view()),
     path('request/<str:pk>/',views.GetRequestView.as_view()),
-    path('request/<str:pk>/',views.RequestView.as_view()),
-    path('request/',views.RequestView.as_view()),
-    path('requests/',views.ListReportView.as_view()),
+    path('requests/',views.ListRequestView.as_view()),
     
 ]

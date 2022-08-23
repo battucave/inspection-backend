@@ -15,5 +15,6 @@ urlpatterns = [
     path('property/<str:pk>/apply/', views.NewPropertyApplication.as_view()),
     path('application/<str:pk>/', views.PropertyApplicationUpdate.as_view()), 
     path('applications/', views. PropertyApplications.as_view()), 
+    path('property/tenant/',views.ListTenantProperties.as_view())
  
 ]

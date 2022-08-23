@@ -73,7 +73,7 @@ class GetEmergencyView(APIView):
 
 class ListUserEmergency(APIView, LimitOffsetPagination):
     """Return emergency contacts of the user"""
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     
 
     def get(self,request):
