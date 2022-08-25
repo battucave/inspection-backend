@@ -6,7 +6,7 @@ from .models import ConversationsModel,MessageModel, UploadedFile
 from django.db.models import Q
 from rest_framework.pagination import LimitOffsetPagination 
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import IsAuthenticated
+#from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import pagination
@@ -15,6 +15,7 @@ from django.http import Http404
 from rest_framework.response import Response
 
 from .serializers import serialize_dialog_model,serialize_message_model
+from authapp.permissions import CustomIsAuthenticatedPerm as IsAuthenticated
 
 
 class CustomSuccessPagination(LimitOffsetPagination):
@@ -25,7 +26,7 @@ class CustomSuccessPagination(LimitOffsetPagination):
             ('previous', self.get_previous_link()),
             ('results', data)
         ])
-        return Response({"success":True,"data":datum})
+        return Response({"success":True,"error":False,"msg":"","data":datum})
 
 
 

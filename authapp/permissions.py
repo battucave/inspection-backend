@@ -25,3 +25,14 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
         # Instance must have an attribute named `owner`.
         return obj.user == request.user
+
+from rest_framework import permissions
+from rest_framework.exceptions import PermissionDenied
+
+class CustomIsAuthenticatedPerm(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user and request.user.is_authenticated:
+            return True
+        raise PermissionDenied({"success":False,"error":True,"msg":"You are not authenticated"
+                                })
+
