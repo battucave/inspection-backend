@@ -78,14 +78,16 @@ class NewMessage(APIView):
         text = request.data.get('text')
         file_obj = request.data.get('image')
         if file_obj:
-            file_ = UploadedFile(file=file_obj,uploaded_by=request.user).save()
+            file_ = UploadedFile(file=file_obj,uploaded_by=request.user)
+            file_.save()
         else:
             file_=None
-        if file_:
-            msg = MessageModel(sender=request.user,recipient=recipient,text=text,image=file_)
-        else:
-            msg=MessageModel(sender=request.user,recipient=recipient,text=text)
+        
+        msg = MessageModel(sender=request.user,recipient=recipient,text=text)
         msg.save()
+        if file_:
+            msg.image = file_
+            msg.save()
         
 
         return Response({"success":True,"error":False,"msg":"Message sent"},status=status.HTTP_201_CREATED)
