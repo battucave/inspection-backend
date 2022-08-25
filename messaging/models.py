@@ -3,6 +3,9 @@ from authapp.models import User
 from django.db.models import Q
 from typing import Optional, Any
 import uuid
+from model_utils.models import TimeStampedModel, SoftDeletableModel, SoftDeletableManager
+import datetime 
+from django.utils import timezone
 
 
 def user_directory_path(instance, filename):
@@ -10,7 +13,8 @@ def user_directory_path(instance, filename):
     return f"user_{instance.uploaded_by.pk}/{filename}"
 
     
-class ConversationsModel(models.Model):
+class ConversationsModel(TimeStampedModel):
+    id = models.BigAutoField(primary_key=True, verbose_name="Id")
     user_one = models.ForeignKey(User,related_name = "user_one",on_delete=models.CASCADE)
     user_two = models.ForeignKey(User,related_name = "user_two",on_delete=models.CASCADE)
 
@@ -38,18 +42,26 @@ class ConversationsModel(models.Model):
 
     @staticmethod
     def dialog_exists(u1: User, u2: User) -> Optional[Any]:
-        return ConversationsModel.objects.filter(Q(user1=u1, user2=u2) | Q(user1=u2, user2=u1)).first()
+        return ConversationsModel.objects.filter(Q(user_one=u1, user_two=u2) | Q(user_one=u2, user_two=u1)).first()
 
     @staticmethod
     def create_if_not_exists(u1: User, u2: User):
         res = ConversationsModel.dialog_exists(u1, u2)
         if not res:
-            ConversationsModel.objects.create(user1=u1, user2=u2)
+            ConversationsModel.objects.create(user_one=u1, user_two=u2)
 
     @staticmethod
     def get_dialogs_for_user(user: User):
-        return ConversationsModel.objects.filter(Q(user1=user) | Q(user2=user)).values_list('user_one__pk', 'user_two__pk')
-
+        return ConversationsModel.objects.filter(Q(user_one=user) | Q(user_two=user)).order_by('-modified')
+        #.values_list('user_one__pk', 'user_two__pk')
+    
+    
+    def get_last_message_time(self):
+        try:
+            tm = MessageModel.objects.get(sender=self.user_one,recipient=self.user_two).get_last_message_for_dialog().created
+        except:
+            tm =self.created
+        return tm
 
 class UploadedFile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -61,14 +73,13 @@ class UploadedFile(models.Model):
     def __str__(self):
         return str(self.file.name)
 
-class MessageModel(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    conversation = models.ForeignKey(ConversationsModel,on_delete=models.CASCADE)
+class MessageModel(TimeStampedModel, SoftDeletableModel):
     sender = models.ForeignKey(User, related_name="message_sender",on_delete=models.CASCADE,blank=True,null=True)
     recipient = models.ForeignKey(User, related_name="message_recipient", on_delete=models.CASCADE,blank=True,null=True)
     text = models.TextField(verbose_name=("Text"), blank=True)
-    file = models.ForeignKey(UploadedFile, related_name='message', on_delete=models.DO_NOTHING,
-                             verbose_name=("File"), blank=True, null=True)
+    image = models.ForeignKey(UploadedFile, related_name='message', on_delete=models.DO_NOTHING,
+                             verbose_name=("Image"), blank=True, null=True)
+    read = models.BooleanField(verbose_name="Read", default=False)
 
     @staticmethod
     def get_unread_count_for_dialog_with_user(sender, recipient):
@@ -86,6 +97,12 @@ class MessageModel(models.Model):
     def save(self, *args, **kwargs):
         super(MessageModel, self).save(*args, **kwargs)
         ConversationsModel.create_if_not_exists(self.sender, self.recipient)
+        #update the modified time of this Conversation
+        dialog1 = ConversationsModel.objects.get(user_one=self.sender,user_two=self.recipient)
+        dialog1.modified=timezone.now()
+        dialog1.save()
+        
+        
 
     class Meta:
         ordering = ('-created',)

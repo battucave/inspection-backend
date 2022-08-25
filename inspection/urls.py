@@ -20,6 +20,7 @@ import property.urls
 import mrequest.urls
 import emergency.urls
 import report.urls
+import messaging.urls
 import property.views as property_view
 
 
@@ -55,12 +56,13 @@ urlpatterns = [
    
     path('admin/', admin.site.urls),
    
-    
+     path('api/',include(messaging.urls)),  
     path('api/',include(authapp.urls)),
     path('api/',include(property.urls)),
      path('api/',include(emergency.urls)),
       path('api/',include(mrequest.urls)),
- path('api/',include(report.urls)),   
+ path('api/',include(report.urls)), 
+ 
     
     
 ]
