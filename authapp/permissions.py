@@ -24,7 +24,10 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return True
 
         # Instance must have an attribute named `owner`.
-        return obj.user == request.user
+        if obj.user == request.user:
+            return True
+        raise PermissionDenied({"success":False,"error":True,"msg":"You do not have object access"
+                                })
 
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied
