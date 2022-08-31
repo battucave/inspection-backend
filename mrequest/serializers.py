@@ -8,3 +8,11 @@ class MRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = MRequest
         fields = "__all__"
+
+class MListRequestSerializer(serializers.ModelSerializer):
+    user = UserCreateSerializer(required=False)
+    class Meta:
+        model = MRequest
+        fields = "__all__"
+    
+  
