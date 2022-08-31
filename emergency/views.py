@@ -54,7 +54,8 @@ class GetEmergencyView(APIView):
     def get(self,request,pk):
         emergency = self.get_object(pk)
         serializer = EmergencySerializer(emergency)
-        return Response(serializer.data)
+        return Response({'success':True,'error':False,'msg':'','data':serializer.data},status=status.HTTP_200_OK)
+
     
     def put(self, request, pk, format=None):
         emergency = self.get_object(pk)
