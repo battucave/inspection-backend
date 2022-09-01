@@ -40,8 +40,11 @@ class RequestView(APIView):
             return Response({'success':False,'error':True,'msg':'You are not authorized to perform this action','data':{}},status=status.HTTP_200_OK)
         if serializer.is_valid():
             serializer.save(user=request.user,property=property)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success':True,'error':False,'msg':'Request created','data':serializer.data},status=status.HTTP_201_CREATED)
+    
+        #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'success':False,'error':True,'msg':'Error creating Request','data':serializer.errors},status=status.HTTP_200_OK)
+
 
     
 
