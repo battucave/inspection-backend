@@ -1,5 +1,4 @@
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
@@ -9,6 +8,8 @@ from .models import Emergency
 from authapp.models import User
 from rest_framework.pagination import LimitOffsetPagination 
 
+from inspection.permissions import CustomIsAuthenticatedPerm as IsAuthenticated
+from inspection.pagination import CustomSuccessPagination
 class NewEmergencyView(APIView):
     """Only owner and vendor can create emergency contact"""
     serializer_class = EmergencySerializer
@@ -18,17 +19,21 @@ class NewEmergencyView(APIView):
         try:
             return Emergency.objects.get(pk=pk)
         except Emergency.DoesNotExist:
-            raise Http404
+            return Response({'success':False,'error':True,'msg':'Emergency contact not found','data':{}},status=status.HTTP_200_OK)
+
 
     def post(self, request):
         serializer = EmergencySerializer(data=request.data)
-        print(request.user.user_type)
+        #print(request.user.user_type)
         if request.user.user_type=='maintenance':
-            raise Http404("Permission denied")
+            return Response({'success':False,'error':True,'msg':'Permission denied, only maintenance user can perform this action','data':{}},status=status.HTTP_200_OK)
+
         if serializer.is_valid():
             serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success':True,'error':False,'msg':'Emergency contact created','data':serializer.data}, status=status.HTTP_201_CREATED)
+
+        return Response({'success':False,'error':True,'msg':'Request failed','data':{}},status=status.HTTP_200_OK)
+
 
 
 
@@ -42,36 +47,39 @@ class GetEmergencyView(APIView):
         try:
             return Emergency.objects.get(pk=pk)
         except Emergency.DoesNotExist:
-            raise Http404
+            return Response({'success':False,'error':True,'msg':'Emergency contact not found','data':{}},status=status.HTTP_200_OK)
+
     
 
     def get(self,request,pk):
         emergency = self.get_object(pk)
         serializer = EmergencySerializer(emergency)
-        return Response(serializer.data)
+        return Response({'success':True,'error':False,'msg':'','data':serializer.data},status=status.HTTP_200_OK)
+
     
     def put(self, request, pk, format=None):
         emergency = self.get_object(pk)
         if request.user != emergency.user:
-            raise Http404
+            return Response({'success':False,'error':True,'msg':'User not authorized to perform this action','data':{}},status=status.HTTP_200_OK)
+
         serializer = EmergencySerializer(emergency, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+            return Response({'success':True,'error':False,'msg':'Emergency contact updated','data':serializer.data},status=status.HTTP_200_OK)
+        return Response({'success':False,'error':True,'msg':'Request failed','data':serializer.errors},status=status.HTTP_200_OK)
+ 
     def delete(self, request, pk, format=None):
         emergency = self.get_object(pk)
         if request.user == emergency.user:
             emergency.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'success':True,'error':False,'msg':'Emergency contact deleted','data':{}},status=status.HTTP_200_OK)
+        return Response({'success':False,'error':True,'msg':'Request failed','data':{}},status=status.HTTP_200_OK)
     
 
 
 
 
-class ListUserEmergency(APIView, LimitOffsetPagination):
+class ListUserEmergency(APIView, CustomSuccessPagination):
     """Return emergency contacts of the user"""
     permission_classes = (IsAuthenticated,)
     

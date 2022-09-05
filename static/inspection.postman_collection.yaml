@@ -1,0 +1,1014 @@
+openapi: 3.0.0
+info:
+  title: Inspection
+  version: 1.0.0
+servers:
+  - url: http://{{url}}
+  - url: http://127.0.0.1:8000
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+tags:
+  - name: User
+  - name: Accounts
+  - name: Property
+  - name: Room
+  - name: Report
+  - name: Request
+  - name: Emergency Contact
+  - name: Messaging
+  - name: Property Applications
+paths:
+  /api/user/property/:
+    get:
+      tags:
+        - User
+      summary: List current user properties
+      security:
+        - bearerAuth: []
+      responses:
+        undefined:
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: null
+  /api/users/me/:
+    get:
+      tags:
+        - User
+      summary: Current user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/users/{userid}:
+    get:
+      tags:
+        - User
+      summary: Return user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userid
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 681bd26a-36df-4ecc-99e2-cae69b52e0d5
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/user/create:
+    post:
+      tags:
+        - Accounts
+      summary: vendor Register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: johwdfn2@gmail.com
+                password: just1234
+                full_name: John m
+                phone: '8398239829'
+                user_type: vendor
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/user/delete/:
+    delete:
+      tags:
+        - Accounts
+      summary: Delete account
+      responses:
+        undefined:
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: null
+  /api/login/:
+    post:
+      tags:
+        - Accounts
+      summary: Login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: googblue@gmail.com
+                password: just1234
+      responses:
+        undefined:
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: null
+  /api/login/refresh/:
+    post:
+      tags:
+        - Accounts
+      summary: Refresh Login Token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                refresh: >-
+                  eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjYwOTA2MjUzLCJpYXQiOjE2NjA5MDQ0NTMsImp0aSI6Ijc1NmE1ZGM0MGVlOTRlM2ZiNzMyZDUzZTNmYmNiNWM1IiwidXNlcl9pZCI6ImQ4NTg4YjE1LWU0NDYtNDRiNC04Y2JhLTYxMTM1MTE0ZDU4YyJ9.Yo1_yJEUVbyisJhGn3NuPCNcsA0YJAhoKr7Fda2Z3_g
+      responses:
+        undefined:
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: null
+  /api/verification/check/:
+    post:
+      tags:
+        - Accounts
+      summary: Check verification code
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                code: '9331'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/verification/refresh/:
+    get:
+      tags:
+        - Accounts
+      summary: Get new verification code
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/property/create/:
+    post:
+      tags:
+        - Property
+      summary: Create property
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                imag:
+                  type: string
+                  format: binary
+                property_type:
+                  type: integer
+                  example: '2'
+                name:
+                  type: string
+                  example: Tower hjh
+                description:
+                  type: string
+                  example: Manor
+                address:
+                  type: string
+                  example: Manor
+                '':
+                  type: string
+      security:
+        - bearerAuth: []
+      responses:
+        undefined:
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: null
+  /api/property/all/:
+    get:
+      tags:
+        - Property
+      summary: List all property
+      security:
+        - bearerAuth: []
+      responses:
+        undefined:
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: null
+  /api/property/{propertyid}/:
+    put:
+      tags:
+        - Property
+      summary: Update property
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                  example: Manhattan
+                name:
+                  type: string
+                  example: nwanem
+                description:
+                  type: string
+                  example: this and that
+                property_type:
+                  type: integer
+                  example: '1'
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: propertyid
+          in: path
+          schema:
+            type: integer
+          required: true
+          example: '34'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Property
+      summary: Delete property
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: propertyid
+          in: path
+          schema:
+            type: integer
+          required: true
+          example: '37'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/property/:
+    get:
+      tags:
+        - Property
+      summary: Search property
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+          example: omo
+      responses:
+        '200':
+          description: OK
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Sun, 14 Aug 2022 21:20:18 GMT
+            Server:
+              schema:
+                type: string
+                example: WSGIServer/0.2 CPython/3.10.4
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Accept
+            Allow:
+              schema:
+                type: string
+                example: GET, HEAD, OPTIONS
+            X-Frame-Options:
+              schema:
+                type: string
+                example: DENY
+            Content-Length:
+              schema:
+                type: integer
+                example: '2'
+            X-Content-Type-Options:
+              schema:
+                type: string
+                example: nosniff
+            Referrer-Policy:
+              schema:
+                type: string
+                example: same-origin
+            Cross-Origin-Opener-Policy:
+              schema:
+                type: string
+                example: same-origin
+          content:
+            application/json:
+              schema:
+                type: object
+              example: []
+  /api/property/search/:
+    get:
+      tags:
+        - Property
+      summary: Get property
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+          example: home
+      responses:
+        '200':
+          description: OK
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Sun, 14 Aug 2022 21:20:18 GMT
+            Server:
+              schema:
+                type: string
+                example: WSGIServer/0.2 CPython/3.10.4
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Accept
+            Allow:
+              schema:
+                type: string
+                example: GET, HEAD, OPTIONS
+            X-Frame-Options:
+              schema:
+                type: string
+                example: DENY
+            Content-Length:
+              schema:
+                type: integer
+                example: '2'
+            X-Content-Type-Options:
+              schema:
+                type: string
+                example: nosniff
+            Referrer-Policy:
+              schema:
+                type: string
+                example: same-origin
+            Cross-Origin-Opener-Policy:
+              schema:
+                type: string
+                example: same-origin
+          content:
+            application/json:
+              schema:
+                type: object
+              example: []
+  /api/user/{userid}/property/:
+    get:
+      tags:
+        - Property
+      summary: List user properties
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userid
+          in: path
+          schema:
+            type: string
+          required: true
+          example: d8588b15-e446-44b4-8cba-61135114d58c
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/property/{propertyid}/room/create/:
+    post:
+      tags:
+        - Room
+      summary: Create room
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Great
+                imag:
+                  type: string
+                  format: binary
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: propertyid
+          in: path
+          schema:
+            type: integer
+          required: true
+          example: '2'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/room/{roomid}/:
+    put:
+      tags:
+        - Room
+      summary: Edit Room
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: fee kay
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: roomid
+          in: path
+          schema:
+            type: integer
+          required: true
+          example: '4'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Room
+      summary: Delete Room
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: roomid
+          in: path
+          schema:
+            type: integer
+          required: true
+          example: '3'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - Room
+      summary: Get Room
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: roomid
+          in: path
+          schema:
+            type: integer
+          required: true
+          example: '5'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/property/{propertyid}/rooms/:
+    get:
+      tags:
+        - Room
+      summary: List Property Rooms
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: propertyid
+          in: path
+          schema:
+            type: integer
+          required: true
+          example: '39'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/report/create/:
+    post:
+      tags:
+        - Report
+      summary: Create report
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Nice
+                description:
+                  type: string
+                  example: Lorem ipsum
+                photo:
+                  type: string
+                  format: binary
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/report/{reportid}/:
+    put:
+      tags:
+        - Report
+      summary: Edit report
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: nunu
+                description:
+                  type: string
+                photo:
+                  type: string
+                  format: binary
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: reportid
+          in: path
+          schema:
+            type: integer
+          required: true
+          example: '1'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Report
+      summary: Delete report
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: reportid
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - Report
+      summary: Get report
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: reportid
+          in: path
+          schema:
+            type: integer
+          required: true
+          example: '1'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/reports/:
+    get:
+      tags:
+        - Report
+      summary: List all reports
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/user/reports/{pk}/:
+    get:
+      tags:
+        - Report
+      summary: List all user reports
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: pk
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 3b371a94-a27e-480f-b6fc-d0a6132fd29a
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/report/claim/{report-pk}/:
+    post:
+      tags:
+        - Report
+      summary: Claims
+      requestBody:
+        content: {}
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: report-pk
+          in: path
+          schema:
+            type: integer
+          required: true
+          example: '1'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/request/create/{propertyid}/:
+    post:
+      tags:
+        - Request
+      summary: Create request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                request_name: Broken pipe
+                description: Set the pipe correct
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: propertyid
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/request/{requestid}/:
+    put:
+      tags:
+        - Request
+      summary: Edit request
+      requestBody:
+        content: {}
+      parameters:
+        - name: requestid
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Request
+      summary: Delete report
+      parameters:
+        - name: requestid
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - Request
+      summary: Get request
+      parameters:
+        - name: requestid
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/requests/:
+    get:
+      tags:
+        - Request
+      summary: List request
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user__id
+          in: query
+          schema:
+            type: string
+        - name: request_state
+          in: query
+          schema:
+            type: string
+        - name: request_type
+          in: query
+          schema:
+            type: string
+        - name: property__id
+          in: query
+          schema:
+            type: string
+      responses:
+        undefined:
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: null
+  /api/contact/create/:
+    post:
+      tags:
+        - Emergency Contact
+      summary: Create emergency
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Sa hospital
+                phone_number: '2839289382'
+                address: FL T
+                city: Ajax
+                zip_code: '489384934'
+                emergency_type: Rescue Services
+                state: cali
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/contact/{contactid}/:
+    put:
+      tags:
+        - Emergency Contact
+      summary: Edit emercency contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: This
+                phone_number: '2839289382'
+                address: FL T
+                city: Ajax
+                zip_code: '489384934'
+                emergency_type: Rescue Services
+                state: cali
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: contactid
+          in: path
+          schema:
+            type: integer
+          required: true
+          example: '3'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Emergency Contact
+      summary: Delete emergency contact
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: contactid
+          in: path
+          schema:
+            type: integer
+          required: true
+          example: '3'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/contacts/:
+    get:
+      tags:
+        - Emergency Contact
+      summary: List user emergency contact
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/message/new/{user_id}/:
+    post:
+      tags:
+        - Messaging
+      summary: New Message
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                text:
+                  type: string
+                  example: Hello? Can you hear me
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: a87eacdc-3c6c-4809-b9b3-a35371d98cb9
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/messages/{user_id}/:
+    get:
+      tags:
+        - Messaging
+      summary: List Messages
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: f295b030-c15c-4e3b-bc3a-4a042d6dc20f
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/conversations/:
+    get:
+      tags:
+        - Messaging
+      summary: List Conversations
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/property/{pk}/apply/:
+    post:
+      tags:
+        - Property Applications
+      summary: Create Property application
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                state:
+                  type: string
+                docs:
+                  type: string
+                  format: binary
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: pk
+          in: path
+          schema:
+            type: integer
+          required: true
+          example: '23'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/application/{property_application_pk}/:
+    put:
+      tags:
+        - Property Applications
+      summary: Update Property application
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                state:
+                  type: string
+                  example: Approved
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: property_application_pk
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/applications/:
+    get:
+      tags:
+        - Property Applications
+      summary: List applications
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tenant__id
+          in: query
+          schema:
+            type: string
+          example: 366147a1-c320-4b43-8d92-a87d659f137e
+        - name: state
+          in: query
+          schema:
+            type: string
+          example: pending
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
