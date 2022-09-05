@@ -46,7 +46,7 @@ class NewProperty(APIView):
             serializer.save(user=request.user)
             return Response({'success':True,'error':False,'msg':'Property created','data':serializer.data},status=status.HTTP_201_CREATED)
     
-        return Response({'success':True,'error':False,'msg':'Request created','data':serializer.errors},status=status.HTTP_200_OK)
+        return Response({'success':False,'error':True,'msg':'Error creating property','data':serializer.errors},status=status.HTTP_200_OK)
     
     
     

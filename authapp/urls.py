@@ -9,8 +9,8 @@ from . import views
 urlpatterns = [
    
 path('',include('djoser.urls')),
-    
-    path('user/create',views.CreateUser.as_view()),
+    path('profilepicture/',views.UploadUserImage.as_view()),
+    path('user/create/',views.CreateUser.as_view()),
     path('user/delete/<str:pk>/',views.DeleteUser.as_view()),
      path('getuser/<str:pk>/',views.GetSingleUser.as_view()),
   

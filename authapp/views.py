@@ -20,11 +20,32 @@ from rest_framework import generics
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import RefreshToken, SlidingToken, UntypedToken
 
+from rest_framework.parsers import MultiPartParser, FormParser
 if api_settings.BLACKLIST_AFTER_ROTATION:
     from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
 
+from inspection.permissions import CustomIsAuthenticatedPerm as IsAuthenticated
 
 
+class UploadUserImage(APIView):
+    """Upload User Image"""
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser, FormParser,)
+   
+    
+    def post(self, request):
+        image = request.FILES.get('image')
+
+        try:
+            request.user.profile_picture = image
+            request.user.save()
+        except:
+            return Response({'success':False,'error':True,'msg':'Error updating profile picture','data':{}},status=status.HTTP_200_OK)
+
+        return Response({'success':True,'error':False,'msg':'Profile picture updated successfully','data':{}},status=status.HTTP_200_OK)
+    
+    
+    
 
 
 class GetSingleUser(APIView):
