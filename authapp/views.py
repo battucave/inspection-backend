@@ -15,12 +15,32 @@ from django.contrib.auth.models import update_last_login
 from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions, serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework import generics
 
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import RefreshToken, SlidingToken, UntypedToken
 
 if api_settings.BLACKLIST_AFTER_ROTATION:
     from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
+
+
+
+
+
+class GetSingleUser(APIView):
+    """Return user with the pk"""
+    serializer_class = UserCreateSerializer
+    permission_classes = (IsAuthenticated,)
+    
+
+    def get(self,request,pk):
+        try:
+            user = User.objects.get(pk=pk)
+        except:
+            return Response({'success':False,'error':True,'msg':'User not found','data':{}},status=status.HTTP_200_OK)
+        serializer = UserCreateSerializer(user)
+        return Response({'success':True,'error':False,'msg':'','data':serializer.data},status=status.HTTP_200_OK)
+    
 
 class CreateUser(APIView):
     """
@@ -88,24 +108,8 @@ class RefreshVerifyCode(APIView):
         return Response({'success':True,'error':False,'msg':'Refresh code generated','data':{'result':True}},status=status.HTTP_201_CREATED)
         
 
-#from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from rest_framework_simplejwt.views import TokenObtainPairView
-
-"""class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        data = super().validate(attrs)
-        refresh = self.get_token(self.user)
-        data['refresh'] = str(refresh)
-        data['access'] = str(refresh.access_token)
-
-        # Add extra responses here
-        data['username'] = self.user.username
-        data['groups'] = self.user.groups.values_list('name', flat=True)
-        return data
-
-"""
-
-
 
 
 class PasswordField(serializers.CharField):
@@ -162,10 +166,6 @@ class TokenObtainPairSerializer(TokenObtainSerializer):
         data = super().validate(attrs)
         if data['success']:
             refresh = self.get_token(self.user)
-            
-
-                
-
             data["data"]["refresh"] = str(refresh)
             data["data"]["access"] = str(refresh.access_token)
 

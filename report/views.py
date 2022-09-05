@@ -32,7 +32,23 @@ class ReportView(APIView):
     
         return Response({'success':False,'error':True,'msg':'Error creating Report','data':serializer.errors},status=status.HTTP_200_OK)
 
-    
+class ClaimItem(APIView):
+    """Claim reported item"""
+    permission_classes = (IsAuthenticated,)
+    def get_object(self, pk):
+        try:
+            return Report.objects.get(pk=pk)
+        except Report.DoesNotExist:
+            return Response({'success':False,'error':True,'msg':'Report not found','data':{}},status=status.HTTP_200_OK)
+
+    def  post(self,request,pk):
+        report = self.get_object(pk)
+        report.claimed_by.add(request.user)
+        report.save()
+        return Response({'success':True,'error':False,'msg':'User added to report','data':{}},status=status.HTTP_200_OK)
+
+
+
 
 
 class GetReportView(APIView):
@@ -56,7 +72,8 @@ class GetReportView(APIView):
     def put(self, request, pk, format=None):
         report = self.get_object(pk)
         if request.user!=report.user:
-            raise Http404
+            return Response({'success':False,'error':True,'msg':'Not authorized to perform action','data':{}},status=status.HTTP_200_OK)
+
         serializer = ReportSerializer(report, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -98,7 +115,7 @@ class GetUserReportList(generics.ListAPIView):
         try:
             user = User.objects.get(pk=pk)
         except User.DoesNotExist:
-            raise Http404
+            return Response({'success':False,'error':True,'msg':'User not found','data':{}},status=status.HTTP_200_OK)
 
         return Report.objects.filter(user=user)
 
@@ -110,3 +127,4 @@ class ListReports(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = Report.objects.all()
     pagination_class = CustomSuccessPagination
+

@@ -21,8 +21,8 @@ from rest_framework.decorators import action
 from inspection.permissions import CustomIsAuthenticatedPerm as IsAuthenticated
 from inspection.pagination import CustomSuccessPagination
 class NewProperty(APIView):
-    """Create,Update,Delete for single property"""
-    permission_classes = (IsOwnerOrReadOnly,)
+    """Create single property"""
+    permission_classes = (IsAuthenticated,)
     parser_classes = (MultiPartParser, FormParser,)
     serializer_class = PropertySerializer
     def get_parsers(self):
