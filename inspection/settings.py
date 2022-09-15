@@ -232,6 +232,7 @@ SIMPLE_JWT = {
 if not DEBUG:
     STATIC_ROOT = '/home/ubuntu/static'
     MEDIA_ROOT= '/home/ubuntu/media'
+    MEDIA_URL = 'http://35.178.202.49/'
 
 #STATIC_ROOT = '/home/ubuntu/static'
 #MEDIA_ROOT= '/home/ubuntu/media'
