@@ -199,7 +199,7 @@ SWAGGER_SETTINGS = {
 }
 
 # Base url to serve media files
-MEDIA_URL = '/media/'
+MEDIA_URL = 'http://127.0.0.1:8000/'
 
 # Path where media is stored
 MEDIA_ROOT =  BASE_DIR / 'media'
