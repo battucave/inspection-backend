@@ -43,14 +43,14 @@ INSTALLED_APPS = [
     'django_filters',
     'property',
     'authapp',
-     'rest_framework',
+    'rest_framework',
     'djoser',
     'report',
     'emergency',
     'mrequest',
     'messaging',
     'drf_yasg',
-    
+    'channels'    
 ]
 
 MIDDLEWARE = [
@@ -232,7 +232,18 @@ SIMPLE_JWT = {
 if not DEBUG:
     STATIC_ROOT = '/home/ubuntu/static'
     MEDIA_ROOT= '/home/ubuntu/media'
-    MEDIA_URL = 'http://35.178.202.49/'
+    MEDIA_URL = 'http://35.178.202.49/media/'
 
 #STATIC_ROOT = '/home/ubuntu/static'
 #MEDIA_ROOT= '/home/ubuntu/media'
+
+# Channels
+ASGI_APPLICATION = 'inspection.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
