@@ -119,6 +119,14 @@ class PropertyApplicationSerializer(serializers.ModelSerializer):
         
         return obj
 
+class ListPropertyApplicationSerializer(serializers.ModelSerializer):
+    documents = DocumentSerializer(many=True,required=False)
+    property = PropertySerializer(required=False)
+
+    class Meta:
+        model = PropertyApplication
+        fields = "__all__"
+
 """   
 from django.core.files import File
 

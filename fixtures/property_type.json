@@ -1,1 +1,1 @@
-[{"model": "property.propertytype", "pk": 1, "fields": {"name": "Villa"}}, {"model": "property.propertytype", "pk": 2, "fields": {"name": "Condo"}}, {"model": "property.propertytype", "pk": 3, "fields": {"name": "House"}}, {"model": "property.propertytype", "pk": 4, "fields": {"name": "Apartment"}}, {"model": "property.propertytype", "pk": 5, "fields": {"name": "Commercial space"}}]
+[]

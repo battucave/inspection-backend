@@ -10,7 +10,7 @@ from rest_framework import generics
 from django.http import Http404
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Property,PropertyType,Room,PropertyApplication
-from .serializers import  PropertySerializer,PropertyTypeSerializer,RoomSerializer,PropertyApplicationSerializer
+from .serializers import  PropertySerializer,PropertyTypeSerializer,RoomSerializer,PropertyApplicationSerializer,ListPropertyApplicationSerializer
 from authapp.permissions import  IsOwner, IsOwnerOrReadOnly
 from authapp.models import User
 from rest_framework import filters 
@@ -286,14 +286,14 @@ class PropertyApplicationUpdate(APIView):
     def put(self, request,pk):
         """Only owner can edit property application"""
         try:
-            property =PropertyApplication.objects.get(pk=pk)
+            property = PropertyApplication.objects.get(pk=pk)
         except PropertyApplication.DoesNotExist:
             return Response({'success':False,'error':True,'msg':'Property application not found','data':{}},status=status.HTTP_200_OK)
 
         if request.user != property.owner:
             return Response({'success':False,'error':True,'msg':'You are not authorized to change this application','data':{}},status=status.HTTP_200_OK)
 
-        serializer = PropertyApplicationSerializer(data=request.data)
+        serializer = PropertyApplicationSerializer(property, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({'success':True,'error':False,'msg':'Request created','data':serializer.data},status=status.HTTP_201_CREATED)
@@ -303,7 +303,7 @@ class PropertyApplications(generics.ListAPIView):
     """List Property Applications """
     permission_classes = (IsAuthenticated,)
     queryset = PropertyApplication.objects.all()
-    serializer_class = PropertyApplicationSerializer
+    serializer_class = ListPropertyApplicationSerializer
     #filter_backends = [filters.SearchFilter]
     #search_fields = ['owner', 'tenant','state']
     filter_backends = [DjangoFilterBackend]

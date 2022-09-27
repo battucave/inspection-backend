@@ -13,6 +13,7 @@ from rest_framework import pagination
 from authapp.models import User
 from django.http import Http404
 from rest_framework.response import Response
+from django.utils import timezone
 
 from .serializers import serialize_dialog_model,serialize_message_model
 from authapp.permissions import CustomIsAuthenticatedPerm as IsAuthenticated
@@ -63,6 +64,24 @@ class ConversationsListView(APIView, CustomSuccessPagination):
         serializer = [serialize_dialog_model(i,request.user.pk) for i in results]
         return self.get_paginated_response(serializer)
 
+class NewConversation(APIView):
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, pk):
+        try:
+            recipient = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({"success":False,"error":True,"msg":"User not found"},status=status.HTTP_200_OK)
+        
+        ConversationsModel.create_if_not_exists(request.user, recipient)
+        #update the modified time of this Conversation
+        dialog1 = ConversationsModel.objects.get(user_one=request.user,user_two=recipient)
+        dialog1.modified=timezone.now()
+        dialog1.save()
+
+        seriliazer = serialize_dialog_model(dialog1, request.user.pk)
+
+        return Response({"success":True,"error":False,"msg":"Conversation Created","data":seriliazer.data},status=status.HTTP_201_CREATED)
 
 class NewMessage(APIView):
     """Create a new message"""
