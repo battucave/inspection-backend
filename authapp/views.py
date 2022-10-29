@@ -44,9 +44,29 @@ class UploadUserImage(APIView):
 
         return Response({'success':True,'error':False,'msg':'Profile picture updated successfully','data':{}},status=status.HTTP_200_OK)
     
+class UpdateUser(APIView):
+    """Update User Profile"""
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser, FormParser,)
+   
     
-    
+    def put(self, request):
+        first_name = request.get('first_name')
+        last_name = request.get('last_name')
+        phone = request.get('phone')
 
+        try:
+            if(first_name):
+                request.user.first_name = first_name
+            if(last_name):
+                request.user.last_name = last_name
+            if(phone):
+                request.user.phone = phone
+            request.user.save()
+        except:
+            return Response({'success':False,'error':True,'msg':'Error updating profile information','data':{}},status=status.HTTP_200_OK)
+
+        return Response({'success':True,'error':False,'msg':'Profile information updated successfully','data':{}},status=status.HTTP_200_OK)
 
 class GetSingleUser(APIView):
     """Return user with the pk"""
