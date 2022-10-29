@@ -51,9 +51,9 @@ class UpdateUser(APIView):
    
     
     def put(self, request):
-        first_name = request.get('first_name')
-        last_name = request.get('last_name')
-        phone = request.get('phone')
+        first_name = request.data.get('first_name')
+        last_name = request.data.get('last_name')
+        phone = request.data.get('phone')
 
         try:
             if(first_name):
