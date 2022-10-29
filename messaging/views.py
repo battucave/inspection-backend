@@ -66,16 +66,15 @@ class ConversationsListView(APIView, CustomSuccessPagination):
 
 class NewConversation(APIView):
     permission_classes = (IsAuthenticated,)
-    
     def post(self, request, pk):
         try:
             recipient = User.objects.get(pk=pk)
         except User.DoesNotExist:
             return Response({"success":False,"error":True,"msg":"User not found"},status=status.HTTP_200_OK)
-        
-        ConversationsModel.create_if_not_exists(request.user, recipient)
+        sender = User.objects.get(pk=request.user.pk)
+        ConversationsModel.create_if_not_exists(sender, recipient)
         #update the modified time of this Conversation
-        dialog1 = ConversationsModel.objects.get(user_one=request.user,user_two=recipient)
+        dialog1 = ConversationsModel.objects.filter(Q(user_one=sender, user_two=recipient) | Q(user_one=recipient, user_two=sender)).first()
         dialog1.modified=timezone.now()
         dialog1.save()
 

@@ -8,6 +8,7 @@ class MRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = MRequest
         fields = "__all__"
+        extra_kwargs = { 'request_name': { 'required': False }, 'description': { 'required': False }, 'request_state': { 'required': False } }
 
 class MListRequestSerializer(serializers.ModelSerializer):
     user = UserCreateSerializer(required=False)
