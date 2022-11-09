@@ -9,8 +9,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework import generics
 from django.http import Http404
 from rest_framework.parsers import MultiPartParser, FormParser
-from .models import Property,PropertyType,Room,PropertyApplication
-from .serializers import  PropertySerializer,PropertyTypeSerializer,RoomSerializer,PropertyApplicationSerializer,ListPropertyApplicationSerializer
+from .models import *
+from .serializers import *
 from authapp.permissions import  IsOwner, IsOwnerOrReadOnly
 from authapp.models import User
 from rest_framework import filters 
@@ -304,8 +304,6 @@ class PropertyApplications(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = PropertyApplication.objects.all()
     serializer_class = ListPropertyApplicationSerializer
-    #filter_backends = [filters.SearchFilter]
-    #search_fields = ['owner', 'tenant','state']
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['owner__id', 'tenant__id','state']
     pagination_class = CustomSuccessPagination
@@ -319,7 +317,107 @@ class ListTenantProperties(APIView,CustomSuccessPagination):
         property_serializer = PropertySerializer(results, many=True)
         return self.get_paginated_response(property_serializer.data)
 
-#>>> Property.objects.filter(property_application__tenant =f,property_application__state='approved') 
-#>>> Property.objects.filter(property_application__tenant =f,property_application__state='pending')
+class RoomOccupancyAPI(APIView):
+    # permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser, FormParser,)
+    serializer_class = RoomOccupancySerializer
+    
+    def get_object(self, id):
+        try:
+            return RoomOccupancy.objects.get(id=id)
+        except RoomOccupancy.DoesNotExist:
+            return Response({'success':False,'error':True,'msg':'Property not found','data':{}},status=status.HTTP_200_OK)
 
-#An owner might want to list tenants
+    def get_property(self, pk):
+        try:
+            return Property.objects.get(pk=pk)
+        except Property.DoesNotExist:
+            return Response({'success':False,'error':True,'msg':'Property not found','data':{}},status=status.HTTP_200_OK)
+
+    def get(self, request, id):
+        room = self.get_object(id)
+        serializer = RoomOccupancySerializer(room)
+        return Response({'success':True,'error':False,'data':serializer.data},status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = RoomOccupancySerializer(data = request.data)
+        property = self.get_property(request.data.get('property'))
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(property=property)
+            return Response({'success':True,'error':False,'data':serializer.data},status=status.HTTP_200_OK)
+
+        return Response({'success':False,'error':True,'msg':serializer.errors,},status=status.HTTP_200_OK)
+
+class ListRoomOccupancys(generics.ListAPIView):
+    # permission_classes = (IsAuthenticated,)
+    queryset = RoomOccupancy.objects.all()
+    serializer_class = ListRoomOccupancySerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['tenant_id', 'property_id']
+    pagination_class = CustomSuccessPagination
+
+class SectionAPI(APIView):
+    # permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser, FormParser,)
+
+    def post(self, request):
+        serializer = SectionSerializer(data = request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'success':True,'error':False,'data':serializer.data},status=status.HTTP_200_OK)
+
+        return Response({'success':False,'error':True,'msg':serializer.errors,},status=status.HTTP_200_OK)
+
+class CheckInAndSection(APIView):
+    # permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser, FormParser,)
+
+    def get_object(self, id):
+        try:
+            return RoomOccupancy.objects.get(id=id)
+        except RoomOccupancy.DoesNotExist:
+            return Response({'success':False,'error':True,'msg':'Room not found','data':{}},status=status.HTTP_200_OK)
+
+    def post(self, request,id):
+
+        room_occupancy = self.get_object(id)
+        serializer = SectionSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            section = Section.objects.get(pk=serializer.data['id'])
+            room_occupancy.check_in_images.add(section)
+            room_occupancy.save()
+            return Response({'success':True,'error':False,'msg':'Request created','data':serializer.data},status=status.HTTP_200_OK)
+        return Response({'success':False,'error':True,'msg':'Error creating Request','data':serializer.errors},status=status.HTTP_200_OK)
+
+class CheckOutAndSection(APIView):
+    parser_classes = (MultiPartParser, FormParser,)
+
+    def get_object(self, id):
+        try:
+            return RoomOccupancy.objects.get(id=id)
+        except RoomOccupancy.DoesNotExist:
+            return Response({'success':False,'error':True,'msg':'Room not found','data':{}},status=status.HTTP_200_OK)
+
+    def post(self, request,id):
+
+        room_occupancy = self.get_object(id)
+        serializer = CheckOutSectionSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save(room_occupancy=room_occupancy, property=room_occupancy.property, check_in_image=request.data.get('check_in_image'))
+            section = Section.objects.get(pk=serializer.data['id'])
+            room_occupancy.check_out_images.add(section)
+            room_occupancy.save()
+            return Response({'success':True,'error':False,'msg':'Request created','data':serializer.data},status=status.HTTP_200_OK)
+        return Response({'success':False,'error':True,'msg':'Error creating Request','data':serializer.errors},status=status.HTTP_200_OK)
+
+class ListDiscrepency(generics.ListAPIView):
+    # permission_classes = (IsAuthenticated,)
+    queryset = Discrepancy.objects.all()
+    serializer_class = DiscrepencySerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['property__id', 'room_occupancy__id']
+    pagination_class = CustomSuccessPagination

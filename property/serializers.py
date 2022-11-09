@@ -2,8 +2,14 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from .models import Property,Image, PropertyType,Room,PropertyImage,PropertyApplication,Documents
+from .models import *
 from authapp.serializers import UserCreateSerializer
+
+from PIL import Image as PILImage
+from pixelmatch.contrib.PIL import pixelmatch
+from io import BytesIO,StringIO
+from django.core.files import File
+from django.core.files.base import ContentFile
 
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -137,3 +143,95 @@ p.image.save(name, f)
 p.save()
 
 """
+
+class SectionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Section
+        fields = "__all__"
+
+class CheckOutSectionSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        if 'check_in_image' in validated_data.keys():
+            check_in_image = validated_data.pop('check_in_image')
+        else:
+            check_in_image = None
+
+        if 'room_occupancy' in validated_data.keys():
+            room_occupancy = validated_data.pop('room_occupancy')
+        else:
+            room_occupancy = None
+
+        if 'property' in validated_data.keys():
+            property = validated_data.pop('property')
+        else:
+            property = None
+
+        obj = Section.objects.create(**validated_data)
+        obj.save()
+
+        print(check_in_image, room_occupancy, property)
+        
+        try:
+            check_in_section = Section.objects.get(pk=check_in_image)
+            img1 = PILImage.open(check_in_section.image)
+            img2 = PILImage.open(validated_data.get('image'))
+            img_diff = PILImage.new("RGBA", img1.size)
+            mismatch = pixelmatch(img1, img2, img_diff, includeAA=True)
+
+            img_io = BytesIO()
+            img_diff.save(img_io, format='png', quality=100)
+            img_content = ContentFile(img_io.getvalue(), 'img5.png')
+            
+            img_diff_obj = Image.objects.create(image=img_content)
+            img_diff_obj.save()
+
+            if mismatch > 0:
+                discrepancy = Discrepancy.objects.create(
+                    property = property,
+                    room_occupancy = room_occupancy,
+                    check_in_image = check_in_section,
+                    check_out_image = obj,
+                    diff = mismatch,
+                    diff_image = img_diff_obj
+                )
+                discrepancy.save()
+        except:
+            print("ERROR cannot calculate")
+
+        return obj
+
+
+    class Meta:
+        model = Section
+        fields = "__all__"
+
+class RoomOccupancySerializer(serializers.ModelSerializer):
+    property = PropertySerializer(required=False)
+    check_in_images = SectionSerializer(many=True, required=False)
+    check_out_images = SectionSerializer(many=True, required=False)
+
+    class Meta:
+        model = RoomOccupancy
+        fields = "__all__"
+
+class ListRoomOccupancySerializer(serializers.ModelSerializer):
+    property = PropertySerializer(required=False)
+    check_in_images = SectionSerializer(many=True, required=False)
+    check_out_images = SectionSerializer(many=True, required=False)
+
+    class Meta:
+        model = RoomOccupancy
+        fields = "__all__"
+
+
+class DiscrepencySerializer(serializers.ModelSerializer):
+    property = PropertySerializer(required=False)
+    room_occupancy = RoomOccupancySerializer(required=False)
+    check_in_image = SectionSerializer(required=False)
+    check_out_image = SectionSerializer(required=False)
+    diff_image = ImageSerializer(required=False)
+    
+    class Meta:
+        model = Discrepancy
+        fields = "__all__"

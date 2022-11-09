@@ -11,13 +11,9 @@ from django.core.files.base import ContentFile
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.user = self.scope.get('user')
         self.room_name = self.scope['url_route']['kwargs']['pk']
         self.room_group_name = 'chat_%s' % self.room_name
         
-        if not self.user or not self.user.is_authenticated:
-            self.close()
-
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
@@ -58,22 +54,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except:
             self.close()
 
+        try:
+            sender = User.objects.get(pk=data.get("sender"))
+        except:
+            self.close()
+
         text = data.get('text')
         img_str = data.get('image')
         img_name = data.get('file_name')
         
         if img_str:
-            format, img_str = data.split(';base64,') 
-            ext = format.split('/')[-1] 
+            file_obj = ContentFile(base64.b64decode(img_str), name=img_name)
 
-            file_obj = ContentFile(base64.b64decode(img_str), name=img_name+'.' + ext)
-
-            file_ = UploadedFile(file=file_obj,uploaded_by=self.user)
+            file_ = UploadedFile(file=file_obj,uploaded_by=sender)
             file_.save()
         else:
             file_=None
         
-        msg = MessageModel(sender=self.user,recipient=recipient,text=text)
+        msg = MessageModel(sender=sender,recipient=recipient,text=text,image=file_)
         msg.save()
 
         if file_:

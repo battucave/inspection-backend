@@ -98,7 +98,7 @@ class MessageModel(TimeStampedModel, SoftDeletableModel):
         super(MessageModel, self).save(*args, **kwargs)
         ConversationsModel.create_if_not_exists(self.sender, self.recipient)
         #update the modified time of this Conversation
-        dialog1 = ConversationsModel.objects.get(user_one=self.sender,user_two=self.recipient)
+        dialog1 = ConversationsModel.objects.filter(Q(user_one=self.sender, user_two=self.recipient) | Q(user_one=self.recipient, user_two=self.sender)).first()
         dialog1.modified=timezone.now()
         dialog1.save()
         

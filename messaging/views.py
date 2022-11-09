@@ -80,7 +80,7 @@ class NewConversation(APIView):
 
         seriliazer = serialize_dialog_model(dialog1, request.user.pk)
 
-        return Response({"success":True,"error":False,"msg":"Conversation Created","data":seriliazer.data},status=status.HTTP_201_CREATED)
+        return Response({"success":True,"error":False,"msg":"Conversation Created","data":seriliazer},status=status.HTTP_201_CREATED)
 
 class NewMessage(APIView):
     """Create a new message"""
