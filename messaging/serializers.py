@@ -33,9 +33,10 @@ def serialize_message_model(m: MessageModel, user_id):
 
 def serialize_dialog_model(m: ConversationsModel, user_id):
     username_field = UserModel.USERNAME_FIELD
-    other_user_pk, other_user_username = UserModel.objects.filter(pk=m.user_one.pk).values_list('pk',
-                                                                                             username_field).first() \
-        if m.user_two.pk == user_id else UserModel.objects.filter(pk=m.user_two.pk).values_list('pk', username_field).first()
+    other_user_pk, other_user_username, other_full_name, other_profile_picture = \
+        UserModel.objects.filter(pk=m.user_one.pk).values_list('pk', username_field, 'full_name', 'profile_picture').first() \
+        if m.user_two.pk == user_id else \
+            UserModel.objects.filter(pk=m.user_two.pk).values_list('pk', username_field, 'full_name', 'profile_picture').first()
     unread_count = MessageModel.get_unread_count_for_dialog_with_user(sender=other_user_pk, recipient=user_id)
     last_message: Optional[MessageModel] = MessageModel.get_last_message_for_dialog(sender=other_user_pk,
                                                                                     recipient=user_id)
@@ -47,6 +48,8 @@ def serialize_dialog_model(m: ConversationsModel, user_id):
         "other_user_id": str(other_user_pk),
         "unread_count": unread_count,
         "username": other_user_username,
+        "full_name": other_full_name,
+        "profile_picture": other_profile_picture,
         "last_message": last_message_ser
     }
     return obj

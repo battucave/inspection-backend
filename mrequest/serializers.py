@@ -1,6 +1,7 @@
 from .models import MRequest
 from rest_framework import serializers
 from authapp.serializers import UserCreateSerializer
+from property.serializers import PropertySerializer
 
 
 class MRequestSerializer(serializers.ModelSerializer):
@@ -12,6 +13,7 @@ class MRequestSerializer(serializers.ModelSerializer):
 
 class MListRequestSerializer(serializers.ModelSerializer):
     user = UserCreateSerializer(required=False)
+    property = PropertySerializer(required=False)
     class Meta:
         model = MRequest
         fields = "__all__"

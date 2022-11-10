@@ -86,6 +86,7 @@ class RoomOccupancy(models.Model):
     check_out_images = models.ManyToManyField("Section", related_name="check_out_images", blank=True, through="CheckOutRoomSection")
     tenant = models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True)
     property = models.ForeignKey(Property,on_delete=models.CASCADE,blank=True,null=True)
+    # room = models.ForeignKey("Room",on_delete=models.CASCADE,blank=True,null=True)
 
 class Discrepancy(models.Model):
     property = models.ForeignKey("Property",on_delete=models.CASCADE)
