@@ -334,6 +334,12 @@ class RoomOccupancyAPI(APIView):
         except Property.DoesNotExist:
             return Response({'success':False,'error':True,'msg':'Property not found','data':{}},status=status.HTTP_200_OK)
 
+    def get_room(self, pk):
+        try:
+            return Room.objects.get(pk=pk)
+        except Room.DoesNotExist:
+            return Response({'success':False,'error':True,'msg':'Room not found','data':{}},status=status.HTTP_200_OK)
+
     def get(self, request, id):
         room = self.get_object(id)
         serializer = RoomOccupancySerializer(room)
@@ -342,8 +348,9 @@ class RoomOccupancyAPI(APIView):
     def post(self, request):
         serializer = RoomOccupancySerializer(data = request.data)
         property = self.get_property(request.data.get('property'))
+        room = self.get_room(request.data.get('room'))
         if serializer.is_valid(raise_exception=True):
-            serializer.save(property=property)
+            serializer.save(property=property, room=room)
             return Response({'success':True,'error':False,'data':serializer.data},status=status.HTTP_200_OK)
 
         return Response({'success':False,'error':True,'msg':serializer.errors,},status=status.HTTP_200_OK)
@@ -353,7 +360,7 @@ class ListRoomOccupancys(generics.ListAPIView):
     queryset = RoomOccupancy.objects.all()
     serializer_class = ListRoomOccupancySerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['tenant_id', 'property_id']
+    filterset_fields = ['tenant__id', 'property__id', 'room__id']
     pagination_class = CustomSuccessPagination
 
 class SectionAPI(APIView):
@@ -382,10 +389,16 @@ class CheckInAndSection(APIView):
     def post(self, request,id):
 
         room_occupancy = self.get_object(id)
-        serializer = SectionSerializer(data=request.data)
+        serializer = CompareSectionSerializer(data=request.data)
         
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(
+             room_occupancy=room_occupancy,
+             property=room_occupancy.property,
+             room=room_occupancy.room,
+             event='check-in',
+             expected_image=request.data.get('expected_image')
+            )
             section = Section.objects.get(pk=serializer.data['id'])
             room_occupancy.check_in_images.add(section)
             room_occupancy.save()
@@ -404,10 +417,16 @@ class CheckOutAndSection(APIView):
     def post(self, request,id):
 
         room_occupancy = self.get_object(id)
-        serializer = CheckOutSectionSerializer(data=request.data)
+        serializer = CompareSectionSerializer(data=request.data)
         
         if serializer.is_valid():
-            serializer.save(room_occupancy=room_occupancy, property=room_occupancy.property, check_in_image=request.data.get('check_in_image'))
+            serializer.save(
+             room_occupancy=room_occupancy,
+             property=room_occupancy.property,
+             room=room_occupancy.room,
+             event='check-out',
+             expected_image=request.data.get('expected_image')
+            )
             section = Section.objects.get(pk=serializer.data['id'])
             room_occupancy.check_out_images.add(section)
             room_occupancy.save()
@@ -419,5 +438,5 @@ class ListDiscrepency(generics.ListAPIView):
     queryset = Discrepancy.objects.all()
     serializer_class = DiscrepencySerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['property__id', 'room_occupancy__id']
+    filterset_fields = ['property__id', 'room_occupancy__id', 'discrepancy_at']
     pagination_class = CustomSuccessPagination

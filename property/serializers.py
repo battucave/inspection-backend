@@ -150,12 +150,12 @@ class SectionSerializer(serializers.ModelSerializer):
         model = Section
         fields = "__all__"
 
-class CheckOutSectionSerializer(serializers.ModelSerializer):
+class CompareSectionSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
-        if 'check_in_image' in validated_data.keys():
-            check_in_image = validated_data.pop('check_in_image')
+        if 'expected_image' in validated_data.keys():
+            expected_image_pk = validated_data.pop('expected_image')
         else:
-            check_in_image = None
+            expected_image_pk = None
 
         if 'room_occupancy' in validated_data.keys():
             room_occupancy = validated_data.pop('room_occupancy')
@@ -167,14 +167,22 @@ class CheckOutSectionSerializer(serializers.ModelSerializer):
         else:
             property = None
 
+        if 'room' in validated_data.keys():
+            room = validated_data.pop('room')
+        else:
+            room = None
+
+        if 'event' in validated_data.keys():
+            event = validated_data.pop('event')
+        else:
+            event = None
+
         obj = Section.objects.create(**validated_data)
         obj.save()
 
-        print(check_in_image, room_occupancy, property)
-        
         try:
-            check_in_section = Section.objects.get(pk=check_in_image)
-            img1 = PILImage.open(check_in_section.image)
+            expected_image = Image.objects.get(pk=expected_image_pk)
+            img1 = PILImage.open(expected_image.image)
             img2 = PILImage.open(validated_data.get('image'))
             img_diff = PILImage.new("RGBA", img1.size)
             mismatch = pixelmatch(img1, img2, img_diff, includeAA=True)
@@ -190,8 +198,9 @@ class CheckOutSectionSerializer(serializers.ModelSerializer):
                 discrepancy = Discrepancy.objects.create(
                     property = property,
                     room_occupancy = room_occupancy,
-                    check_in_image = check_in_section,
-                    check_out_image = obj,
+                    expected_image = expected_image,
+                    uploaded_image = obj,
+                    discrepancy_at = event,
                     diff = mismatch,
                     diff_image = img_diff_obj
                 )
@@ -208,6 +217,7 @@ class CheckOutSectionSerializer(serializers.ModelSerializer):
 
 class RoomOccupancySerializer(serializers.ModelSerializer):
     property = PropertySerializer(required=False)
+    room = RoomSerializer(required=False)
     check_in_images = SectionSerializer(many=True, required=False)
     check_out_images = SectionSerializer(many=True, required=False)
 
@@ -217,6 +227,7 @@ class RoomOccupancySerializer(serializers.ModelSerializer):
 
 class ListRoomOccupancySerializer(serializers.ModelSerializer):
     property = PropertySerializer(required=False)
+    room = RoomSerializer(required=False)
     check_in_images = SectionSerializer(many=True, required=False)
     check_out_images = SectionSerializer(many=True, required=False)
 
@@ -228,8 +239,8 @@ class ListRoomOccupancySerializer(serializers.ModelSerializer):
 class DiscrepencySerializer(serializers.ModelSerializer):
     property = PropertySerializer(required=False)
     room_occupancy = RoomOccupancySerializer(required=False)
-    check_in_image = SectionSerializer(required=False)
-    check_out_image = SectionSerializer(required=False)
+    expected_image = ImageSerializer(required=False)
+    uploaded_image = SectionSerializer(required=False)
     diff_image = ImageSerializer(required=False)
     
     class Meta:

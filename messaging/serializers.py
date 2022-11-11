@@ -1,3 +1,4 @@
+from inspection.settings import MEDIA_URL
 from .models import ConversationsModel,MessageModel,UploadedFile
 from rest_framework import serializers
 from typing import Optional, Dict
@@ -49,7 +50,7 @@ def serialize_dialog_model(m: ConversationsModel, user_id):
         "unread_count": unread_count,
         "username": other_user_username,
         "full_name": other_full_name,
-        "profile_picture": other_profile_picture,
+        "profile_picture": MEDIA_URL+other_profile_picture,
         "last_message": last_message_ser
     }
     return obj

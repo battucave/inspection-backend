@@ -82,16 +82,22 @@ class CheckOutRoomSection(models.Model):
 
 class RoomOccupancy(models.Model):
     name = models.CharField(max_length=100)
-    check_in_images = models.ManyToManyField("Section", related_name="check_in_iamges", blank=True, through="CheckInRoomSection")
+    check_in_images = models.ManyToManyField("Section", related_name="check_in_images", blank=True, through="CheckInRoomSection")
     check_out_images = models.ManyToManyField("Section", related_name="check_out_images", blank=True, through="CheckOutRoomSection")
     tenant = models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True)
     property = models.ForeignKey(Property,on_delete=models.CASCADE,blank=True,null=True)
-    # room = models.ForeignKey("Room",on_delete=models.CASCADE,blank=True,null=True)
+    room = models.ForeignKey("Room",on_delete=models.CASCADE,blank=True,null=True)
+
+DISCREPANCY_TIME = [
+    ("check-in", "check-in"),
+    ("check-out", "check-out"),
+]
 
 class Discrepancy(models.Model):
     property = models.ForeignKey("Property",on_delete=models.CASCADE)
     room_occupancy = models.ForeignKey("RoomOccupancy",on_delete=models.CASCADE)
-    check_in_image = models.ForeignKey("Section",related_name="check_in_section",on_delete=models.CASCADE)
-    check_out_image = models.ForeignKey("Section",related_name="check_out_section",on_delete=models.CASCADE)
+    expected_image = models.ForeignKey("Image",related_name="expected_image",on_delete=models.CASCADE,blank=True,null=True)
+    uploaded_image = models.ForeignKey("Section",on_delete=models.CASCADE,blank=True,null=True)
+    discrepancy_at = models.CharField(max_length=100, choices=DISCREPANCY_TIME)
     diff = models.PositiveIntegerField(blank=True,null=True)
-    diff_image = models.ForeignKey("Image", on_delete=models.CASCADE)
+    diff_image = models.ForeignKey("Image",related_name="difference_image", on_delete=models.CASCADE)
