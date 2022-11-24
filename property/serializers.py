@@ -184,8 +184,10 @@ class CompareSectionSerializer(serializers.ModelSerializer):
             expected_image = Image.objects.get(pk=expected_image_pk)
             img1 = PILImage.open(expected_image.image)
             img2 = PILImage.open(validated_data.get('image'))
-            img_diff = PILImage.new("RGBA", img1.size)
-            mismatch = pixelmatch(img1, img2, img_diff, includeAA=True)
+            img1.thumbnail((1000, 1000))
+            img2.thumbnail((1000, 1000))
+            img_diff = PILImage.new("RGB", img1.size)
+            mismatch = pixelmatch(img1, img2, img_diff, threshold=0.5, fail_fast=True,includeAA=True)
 
             img_io = BytesIO()
             img_diff.save(img_io, format='png', quality=100)

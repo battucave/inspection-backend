@@ -25,6 +25,7 @@ if api_settings.BLACKLIST_AFTER_ROTATION:
     from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
 
 from inspection.permissions import CustomIsAuthenticatedPerm as IsAuthenticated
+from .backends import FirebaseBackend
 
 
 class UploadUserImage(APIView):
@@ -51,17 +52,17 @@ class UpdateUser(APIView):
    
     
     def put(self, request):
-        first_name = request.data.get('first_name')
-        last_name = request.data.get('last_name')
+        full_name = request.data.get('full_name')
         phone = request.data.get('phone')
+        user_type = request.data.get('user_type')
 
         try:
-            if(first_name):
-                request.user.first_name = first_name
-            if(last_name):
-                request.user.last_name = last_name
+            if(full_name):
+                request.user.full_name = full_name
             if(phone):
                 request.user.phone = phone
+            if(user_type):
+                request.user.user_type = user_type
             request.user.save()
         except:
             return Response({'success':False,'error':True,'msg':'Error updating profile information','data':{}},status=status.HTTP_200_OK)
@@ -81,7 +82,16 @@ class GetSingleUser(APIView):
             return Response({'success':False,'error':True,'msg':'User not found','data':{}},status=status.HTTP_200_OK)
         serializer = UserCreateSerializer(user)
         return Response({'success':True,'error':False,'msg':'','data':serializer.data},status=status.HTTP_200_OK)
-    
+
+class VerifyFirebaseUser(APIView):
+    serializer_class = UserCreateSerializer
+    authentication_classes = [FirebaseBackend]
+
+    def get(self, request):
+        if not request.user:
+            return Response({'success':False,'error':True,'msg':'User not authenticated','data':{}},status=status.HTTP_200_OK)
+        serializer = UserCreateSerializer(request.user)
+        return Response({'success':True,'error':False,'msg':'','data':serializer.data},status=status.HTTP_200_OK)
 
 class CreateUser(APIView):
     """
