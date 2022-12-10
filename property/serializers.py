@@ -248,3 +248,14 @@ class DiscrepencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Discrepancy
         fields = "__all__"
+
+
+class TenantSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Tenant
+        fields = ("id", "email", "property","user")
+        extra_kwargs = {
+            "property": {"read_only": True},
+            "user": {"read_only": True},
+        }

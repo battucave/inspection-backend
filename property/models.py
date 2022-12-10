@@ -52,8 +52,8 @@ class Tenant(models.Model):
     user = models.ForeignKey(User,on_delete=models.SET_NULL, null=True, blank=True)
     property = models.ForeignKey(to=Property, on_delete=models.CASCADE)
 
-    class Meta:
-            unique_together = ("email", "property")
+    # class Meta:
+    #         unique_together = ("email", "property")
 
 
     
