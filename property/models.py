@@ -29,6 +29,8 @@ class PropertyType(models.Model):
 
     def __str__(self):
         return self.name
+
+
         
 class Property(models.Model):
     name = models.CharField(max_length=200)
@@ -45,6 +47,18 @@ class Property(models.Model):
     class Meta:
         verbose_name_plural = "Properties"
     
+class Tenant(models.Model):
+    email = models.EmailField(verbose_name="Email")
+    user = models.ForeignKey(User,on_delete=models.SET_NULL, null=True, blank=True)
+    property = models.ForeignKey(to=Property, on_delete=models.CASCADE)
+
+    class Meta:
+            unique_together = ("email", "property")
+
+
+    
+
+
 
 class Room(models.Model):
     property = models.ForeignKey("Property",on_delete=models.CASCADE)

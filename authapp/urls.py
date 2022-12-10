@@ -8,7 +8,7 @@ from . import views
 
 urlpatterns = [
    
-path('',include('djoser.urls')),
+    path('',include('djoser.urls')),
     path('profilepicture/',views.UploadUserImage.as_view()),
     path('user/create/',views.CreateUser.as_view()),
     path('user/update/',views.UpdateUser.as_view()),
