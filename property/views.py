@@ -452,7 +452,7 @@ class TenantViewSet(ModelViewSet):
     """
     http_method_names = ['get', 'post', 'delete', 'head', 'options', 'trace']	
     serializer_class = TenantSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     
 
     def get_property(self):
@@ -464,6 +464,10 @@ class TenantViewSet(ModelViewSet):
     def get_queryset(self):
         return Tenant.objects.filter(property=self.get_property())
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['property'] = self.get_property()
+        return context
         
-        
-        
+    def perform_create(self, serializer):
+        serializer.save(property = self.get_property())

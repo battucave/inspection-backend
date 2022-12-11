@@ -259,3 +259,17 @@ class TenantSerializer(serializers.ModelSerializer):
             "property": {"read_only": True},
             "user": {"read_only": True},
         }
+
+    def validate(self, data):
+        if Tenant.objects.filter(
+            email=data['email'],
+            property = self.context["property"]         
+            ).exists():
+
+            raise serializers.ValidationError(
+                "This user (email) already in your tenant added list"
+            )
+        return data
+        
+
+    
