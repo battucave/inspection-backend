@@ -200,6 +200,7 @@ SWAGGER_SETTINGS = {
     }
 }
 
+
 # Base url to serve media files
 MEDIA_URL = 'http://127.0.0.1:8000/'
 

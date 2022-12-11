@@ -442,6 +442,7 @@ class ListDiscrepency(generics.ListAPIView):
     filterset_fields = ['property__id', 'room_occupancy__id', 'discrepancy_at']
     pagination_class = CustomSuccessPagination
 
+from rest_framework import permissions
 class TenantViewSet(ModelViewSet):
     """
     get or create or delete the tenant on user property
@@ -451,9 +452,11 @@ class TenantViewSet(ModelViewSet):
     """
     http_method_names = ['get', 'post', 'delete', 'head', 'options', 'trace']	
     serializer_class = TenantSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
 
     def get_property(self):
-        properity_id = self.kwargs['pid']
+        properity_id = self.kwargs.get('pid')
         property = get_object_or_404(Property, id=properity_id, user=self.request.user)
         return property
 

@@ -6,14 +6,14 @@ router = routers.DefaultRouter()
 router.register(r"tenant", views.TenantViewSet, basename="tenant")
 
 urlpatterns = [
-    path("property/<int:pid>/", include(router.urls)),
 
     path('property/all/',views.AllProperty.as_view()),
     path('property/create/',views.NewProperty.as_view()),
     path('property/<str:pk>/',views.GetProperty.as_view()),
 
     path('property/',views.PropertySearchView.as_view()),
-   
+    path("property/<int:pid>/", include(router.urls)),
+
     path('property/<str:pk>/rooms/',views.PropertyRooms.as_view()),
     path('propertytype/',views.PropertyTypeView.as_view()),
     path('property/<str:pk>/room/create/',views.NewRoom.as_view()),
