@@ -182,7 +182,7 @@ REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
        'rest_framework_simplejwt.authentication.JWTAuthentication',
-       'auth.backends.FirebaseBackend',    
+       'authapp.backends.FirebaseBackend',    
     ),
     'DEFAULT_SCHEMA_CLASS':   'rest_framework.schemas.coreapi.AutoSchema',
    
@@ -200,6 +200,7 @@ SWAGGER_SETTINGS = {
     }
 }
 
+
 # Base url to serve media files
 MEDIA_URL = 'http://127.0.0.1:8000/'
 
@@ -210,12 +211,16 @@ if not DEBUG:
     SENDGRID_API_KEY = config('SENDGRID_API_KEY')
 else:
     SENDGRID_API_KEY = 'YOUR_API_KEY'
-
+#SENDGRID_API_KEY = "1TjbH4wVQ8-CjqSJMTQDaQ"
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'apikey' # this is exactly the value 'apikey'
-EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
 EMAIL_PORT = 587
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "mike@inspection-360.com"
+
+
+
 DJOSER={
 'SEND_ACTIVATION_EMAIL': False,
 'SERIALIZERS':{
@@ -224,12 +229,12 @@ DJOSER={
 }
 }
 
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(weeks=1),
     "TOKEN_OBTAIN_SERIALIZER": "authapp.views.TokenObtainPairSerializer",
 }
-
 
 
 

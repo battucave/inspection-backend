@@ -48,6 +48,7 @@ schema_view = get_schema_view(
       license=openapi.License(name="BSD License"),
    ),
    public=True,
+   authentication_classes =[],
    permission_classes=[permissions.AllowAny],
 )
 
@@ -56,10 +57,17 @@ schema_view = get_schema_view(
 #   re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
    
 urlpatterns = [
+    path("api-docs/", schema_view.with_ui("swagger", cache_timeout=0), name="api_docs"),
+
     path('docs/', TemplateView.as_view(
         template_name='swagger.html',
         extra_context={'schema_url': 'openapi-schema'}
     ), name='swagger-ui'),
+    re_path(
+        r"^apis(?P<format>\.json|\.yaml)$",
+        schema_view.without_ui(cache_timeout=0),
+        name="schema-json",
+    ),
     path('swagger.json', SwaggerPageView.as_view(), name='schema-json'),
      #re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
    
@@ -70,7 +78,7 @@ urlpatterns = [
     path('api/',include(property.urls)),
      path('api/',include(emergency.urls)),
       path('api/',include(mrequest.urls)),
- path('api/',include(report.urls)), 
+     path('api/',include(report.urls)), 
  
     
     

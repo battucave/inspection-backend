@@ -17,7 +17,8 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
-
+from rest_framework.viewsets import ModelViewSet
+from django.shortcuts import get_object_or_404
 from inspection.permissions import CustomIsAuthenticatedPerm as IsAuthenticated
 from inspection.pagination import CustomSuccessPagination
 class NewProperty(APIView):
@@ -440,3 +441,33 @@ class ListDiscrepency(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['property__id', 'room_occupancy__id', 'discrepancy_at']
     pagination_class = CustomSuccessPagination
+
+from rest_framework import permissions
+class TenantViewSet(ModelViewSet):
+    """
+    get or create or delete the tenant on user property
+    properity owner can add user by email to this properity if the user registred
+    he will find properity assigned to him
+    if he not app user once he register this properity will assign to him
+    """
+    http_method_names = ['get', 'post', 'delete', 'head', 'options', 'trace']	
+    serializer_class = TenantSerializer
+    permission_classes = [permissions.AllowAny]
+    
+
+    def get_property(self):
+        properity_id = self.kwargs.get('pid')
+        property = get_object_or_404(Property, id=properity_id, user=self.request.user)
+        return property
+
+
+    def get_queryset(self):
+        return Tenant.objects.filter(property=self.get_property())
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['property'] = self.get_property()
+        return context
+        
+    def perform_create(self, serializer):
+        serializer.save(property = self.get_property())
