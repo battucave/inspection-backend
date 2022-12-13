@@ -65,7 +65,7 @@ class User(AbstractUser):
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
-    username = None
+    username = models.CharField(max_length=150, blank=False, null=True)
 
     def __str__(self):
         return self.email
