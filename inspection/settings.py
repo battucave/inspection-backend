@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     #"allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
+    'allauth.socialaccount.providers.facebook',
+
     "dj_rest_auth",
     'django_filters',
     'property',
@@ -60,6 +62,22 @@ INSTALLED_APPS = [
     'drf_yasg',
     'channels',    
 ]
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'offline',
+        }
+    },
+    'facebook': {
+        'METHOD': 'oauth2',
+        'SCOPE': ['email', 'public_profile'],
+
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

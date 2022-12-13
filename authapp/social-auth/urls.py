@@ -17,8 +17,8 @@ urlpatterns = [
     path("facebook/login/", FacebookLogin.as_view(), name="social_facebook_login"),
     path("google/login/", GoogleLogin.as_view(), name="social_google_login"),
     # connect endpoints - can be used to implement connect to existing account
-    path("facebook/connect/", FacebookLogin.as_view(), name="social_facebook_connect"),
-    path("google/connect/", GoogleLogin.as_view(), name="social_google_connect"),
+    # path("facebook/connect/", FacebookLogin.as_view(), name="social_facebook_connect"),
+    # path("google/connect/", GoogleLogin.as_view(), name="social_google_connect"),
     path(
         "socialaccounts/", SocialAccountListView.as_view(), name="social_account_list"
     ),
