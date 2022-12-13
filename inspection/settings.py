@@ -42,17 +42,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    "rest_framework.authtoken",
+    "allauth",
+    #"allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "dj_rest_auth",
     'django_filters',
     'property',
     'authapp',
-    'rest_framework',
     'djoser',
     'report',
     'emergency',
     'mrequest',
     'messaging',
     'drf_yasg',
-    'channels'    
+    'channels',    
 ]
 
 MIDDLEWARE = [
@@ -169,7 +175,6 @@ FIXTURE_DIRS = (
     )
 
 AUTH_USER_MODEL = 'authapp.User'
-#AUTHENTICATION_BACKENDS = ('authapp.backends.EmailBackend')
 #configure DRF
 
 #'DEFAULT_FILTER_BACKENDS': [
@@ -188,7 +193,25 @@ REST_FRAMEWORK = {
    
 }
 
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
 
+
+# allauth / users
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"  #'email'
+ACCOUNT_EMAIL_VERIFICATION = "optional"
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+LOGIN_REDIRECT_URL = "users:redirect"
+
+ACCOUNT_ADAPTER = "authapp.adapters.AccountAdapter"
+SOCIALACCOUNT_ADAPTER = "authapp.adapters.SocialAccountAdapter"
+ACCOUNT_LOGOUT_ON_GET = False
 
 SWAGGER_SETTINGS = {
    'SECURITY_DEFINITIONS': {

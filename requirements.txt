@@ -66,3 +66,6 @@ uritemplate==4.1.1
 urllib3==1.26.11
 wrapt==1.14.1
 zipp==3.10.0
+django-allauth==0.51.0
+dj-rest-auth==2.2.5
+
