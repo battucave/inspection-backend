@@ -19,7 +19,6 @@ urlpatterns = [
     # connect endpoints - can be used to implement connect to existing account
     path("facebook/connect/", FacebookLogin.as_view(), name="social_facebook_connect"),
     path("google/connect/", GoogleLogin.as_view(), name="social_google_connect"),
-    path("apple/connect/", AppleLogin.as_view(), name="social_apple_connect"),
     path(
         "socialaccounts/", SocialAccountListView.as_view(), name="social_account_list"
     ),
