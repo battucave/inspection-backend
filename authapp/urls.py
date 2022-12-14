@@ -9,6 +9,8 @@ from . import views
 urlpatterns = [
    
     path('',include('djoser.urls')),
+    path("social-auth/", include('authapp.social-auth.urls')),
+
     path('profilepicture/',views.UploadUserImage.as_view()),
     path('user/create/',views.CreateUser.as_view()),
     path('user/update/',views.UpdateUser.as_view()),
