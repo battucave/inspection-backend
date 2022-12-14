@@ -80,7 +80,8 @@ urlpatterns = [
       path('api/',include(mrequest.urls)),
      path('api/',include(report.urls)), 
  
-    
+    re_path(r'^accounts/', include('allauth.urls'), name='socialaccount_signup'),
+
     
 ]
 
