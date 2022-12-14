@@ -219,14 +219,12 @@ AUTHENTICATION_BACKENDS = (
 
 # allauth / users
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"  #'email'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
-LOGIN_REDIRECT_URL = "users:redirect"
-
+ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_ADAPTER = "authapp.adapters.AccountAdapter"
 SOCIALACCOUNT_ADAPTER = "authapp.adapters.SocialAccountAdapter"
 ACCOUNT_LOGOUT_ON_GET = False
@@ -269,8 +267,13 @@ DJOSER={
     'current_user':'authapp.serializers.UserCreateSerializer'
 }
 }
+REST_AUTH_SERIALIZERS = {
+    # Replace password reset serializer to fix 500 error
+    #'USER_DETAILS_SERIALIZER': 'authapp.views.TokenObtainPairSerializer',
+}
 
-
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = 'auth-id'
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(weeks=1),
