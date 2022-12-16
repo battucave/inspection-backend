@@ -16,11 +16,13 @@ except Exception:
 
 class FacebookLogin(SocialLoginView):
     permission_classes = (AllowAny,)
+    authentication_classes=[]
     adapter_class = FacebookOAuth2Adapter
 
 
 class GoogleLogin(SocialLoginView):
     permission_classes = (AllowAny,)
+    authentication_classes = []
     adapter_class = GoogleOAuth2Adapter
     client_class = OAuth2Client
 
