@@ -24,19 +24,18 @@ def notify_tenant_with_property(sender, instance, created, **kwargs):
         email = instance.email
         user = User.objects.filter(email=email).first()
         context ={
-                    "property_owner":instance.property.user,
+                    "owner":instance.property.user.full_name,
                      "property":instance.property.name,
                      
                 }
         if user:
-            # notify user to login and check his email
+            # notify user to login and check his account in app
             title = f"Inspection360 {instance.property.name} Invitation"
             email_html_message = render_to_string('email/proprty_tenant_user_email.html', context)
             email_plaintext_message = render_to_string('email/proprty_tenant_user_email.txt', context)
     
         else:
-            # notify user by email he is added
-
+            # notify user by email he is added and he need to signup
             title = f"Inspection360 {instance.property.name} Invitation"
             email_html_message = render_to_string('email/tenant_user_signup_email.html', context)
             email_plaintext_message = render_to_string('email/ptenant_user_signup_email.txt', context)
