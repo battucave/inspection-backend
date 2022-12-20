@@ -1,0 +1,7 @@
+You've Been Added as a Tenant by {{owner}}
+Signup now in Inspection360 and Enjoy viewing the app
+{{Link}}
+Once you are in the app you can access and view the property, you can then check in by
+performing the inspection to gain access to even more features!
+Thanks,The Inspection 360 team
+                   
