@@ -23,9 +23,9 @@ urlpatterns = [
         "socialaccounts/", SocialAccountListView.as_view(), name="social_account_list"
     ),
     # Allows to disconnect social account
-    path(
-        "socialaccounts/<int:pk>/disconnect/",
-        SocialAccountDisconnectView.as_view(),
-        name="social_account_disconnect",
-    ),
+    # path(
+    #     "socialaccounts/<int:pk>/disconnect/",
+    #     SocialAccountDisconnectView.as_view(),
+    #     name="social_account_disconnect",
+    # ),
 ]
