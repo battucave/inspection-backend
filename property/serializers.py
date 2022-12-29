@@ -270,6 +270,13 @@ class TenantSerializer(serializers.ModelSerializer):
                 "This user (email) already in your tenant added list"
             )
         return data
+
+class InspectionScheduleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = InspectionSchedule
+        fields = ("property", "period","last_triggered")
+        read_only_fields = ['property',"last_triggered"]
         
 
     

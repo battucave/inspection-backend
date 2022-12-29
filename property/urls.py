@@ -12,6 +12,7 @@ urlpatterns = [
     path('property/<str:pk>/',views.GetProperty.as_view()),
 
     path('property/',views.PropertySearchView.as_view()),
+    path('property/<int:id>/inspection-request/',views.InspectionScheduleView.as_view(),name="property-inspection" ),
     path("property/<int:pid>/", include(router.urls)),
 
     path('property/<str:pk>/rooms/',views.PropertyRooms.as_view()),

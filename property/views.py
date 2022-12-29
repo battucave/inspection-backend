@@ -21,6 +21,7 @@ from rest_framework.viewsets import ModelViewSet
 from django.shortcuts import get_object_or_404
 from inspection.permissions import CustomIsAuthenticatedPerm as IsAuthenticated
 from inspection.pagination import CustomSuccessPagination
+
 class NewProperty(APIView):
     """Create single property"""
     permission_classes = (IsAuthenticated,)
@@ -452,7 +453,7 @@ class TenantViewSet(ModelViewSet):
     """
     http_method_names = ['get', 'post', 'delete', 'head', 'options', 'trace']	
     serializer_class = TenantSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     
 
     def get_property(self):
@@ -471,3 +472,24 @@ class TenantViewSet(ModelViewSet):
         
     def perform_create(self, serializer):
         serializer.save(property = self.get_property())
+
+from rest_framework.generics import RetrieveUpdateAPIView
+
+class InspectionScheduleView(RetrieveUpdateAPIView):
+    """
+    inspection request schedule view set
+    by passing property id in path
+    """
+    serializer_class = InspectionScheduleSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_object(self):
+        property = get_object_or_404(
+            Property, user= self.request.user,
+            id=self.kwargs['id']
+        )
+        inspection_request= get_object_or_404(
+            InspectionSchedule,
+            property=property
+        )
+        return inspection_request
