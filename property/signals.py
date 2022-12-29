@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from property.models import Property, Tenant
+from property.models import Property, Tenant, InspectionSchedule
 from authapp.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -52,3 +52,11 @@ def notify_tenant_with_property(sender, instance, created, **kwargs):
         )
         msg.attach_alternative(email_html_message, "text/html")
         msg.send()
+
+# create inspectionschedule for each property
+@receiver(post_save, sender=Property)
+def create_inspection_schedule(sender, instance, created, **kwargs):
+    if created:
+         InspectionSchedule.objects.create(
+            property=instance
+         )
