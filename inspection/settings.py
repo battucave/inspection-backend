@@ -301,5 +301,5 @@ CHANNEL_LAYERS = {
         },
     },
 }
-EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
+#EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
 #http://35.178.202.49/accounts/facebook/login/callback/
