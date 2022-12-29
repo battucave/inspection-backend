@@ -4,12 +4,16 @@ from .models import *
 class TenantInline(admin.TabularInline):
     model = Tenant
 
+class InspectionInline(admin.TabularInline):
+    model = InspectionSchedule
+
 class AdminTenant(admin.ModelAdmin):
     model = Tenant
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
-     inlines = [TenantInline]
+     inlines = [TenantInline, InspectionInline]
+
 
 
 admin.site.register(Tenant, AdminTenant)

@@ -24,7 +24,7 @@ def notify_tenant_with_property(sender, instance, created, **kwargs):
         email = instance.email
         user = User.objects.filter(email=email).first()
         context ={
-                    "owner":instance.property.user.full_name,
+                     "owner":instance.property.user.full_name,
                      "property":instance.property.name,
                      
                 }

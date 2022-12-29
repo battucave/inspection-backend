@@ -1,7 +1,7 @@
 from django.db import models
 from authapp.models import User
 from django.core.exceptions import ValidationError
-
+from django.utils import timezone
 def validate_file_extension(value):
     if not value.name.endswith('.pdf'):
         raise ValidationError(u'Error message')
@@ -58,6 +58,10 @@ class Tenant(models.Model):
 
     
 
+class InspectionSchedule(models.Model):
+    property = models.OneToOneField(to=Property, on_delete=models.CASCADE)
+    period = models.SmallIntegerField(verbose_name="inspection interval with day")
+    last_triggered = models.DateTimeField(default=timezone.now)
 
 
 class Room(models.Model):
