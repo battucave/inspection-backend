@@ -26,4 +26,11 @@ These details refer only to the development server
    To load property_type fixtures
    python manage.py loaddata property_type
 
+## to run daily cron task to trigger emails for overdue tenant inspection
+do the following
+login on server
+1- run ```crontab -e ```
+2- copy and past the follwing in opened file this will trigger task every day@00:00
+
+``` 0 0  * * * /home/ubuntu/.virtualenvs/inspection/bin/python  /home/ubuntu/inspection-backend/manage.py check_triger_inspection_request```
     
