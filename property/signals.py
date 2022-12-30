@@ -38,7 +38,7 @@ def notify_tenant_with_property(sender, instance, created, **kwargs):
             # notify user by email he is added and he need to signup
             title = f"Inspection360 {instance.property.name} Invitation"
             email_html_message = render_to_string('email/tenant_user_signup_email.html', context)
-            email_plaintext_message = render_to_string('email/ptenant_user_signup_email.txt', context)
+            email_plaintext_message = render_to_string('email/tenant_user_signup_email.txt', context)
         from_email = settings.DEFAULT_FROM_EMAIL
         msg = EmailMultiAlternatives(
         # title:
