@@ -10,9 +10,12 @@ class InspectionInline(admin.TabularInline):
 class AdminTenant(admin.ModelAdmin):
     model = Tenant
 
+class DiscrepancyInline(admin.TabularInline):
+    model = Discrepancy
+    
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
-     inlines = [TenantInline, InspectionInline]
+     inlines = [TenantInline, InspectionInline, DiscrepancyInline]
 
 
 
