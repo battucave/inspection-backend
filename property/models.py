@@ -121,3 +121,11 @@ class Discrepancy(models.Model):
     discrepancy_at = models.CharField(max_length=100, choices=DISCREPANCY_TIME)
     diff = models.PositiveIntegerField(blank=True,null=True)
     diff_image = models.ForeignKey("Image",related_name="difference_image", on_delete=models.CASCADE)
+
+
+    def __str__(self) -> str:
+        try:
+            property_name = self.property.name
+            return property_name
+        except:       
+            return super().__str__()
