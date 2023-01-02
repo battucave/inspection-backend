@@ -15,6 +15,7 @@ class DiscrepancyInline(admin.TabularInline):
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
+     search_fields = ["name", ]
      inlines = [TenantInline, InspectionInline, DiscrepancyInline]
 
 
