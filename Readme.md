@@ -32,5 +32,5 @@ login on server
 1- run ```crontab -e ```
 2- copy and past the follwing in opened file this will trigger task every day@00:00
 
-``` 0 0  * * * /home/ubuntu/.virtualenvs/inspection/bin/python  /home/ubuntu/inspection-backend/manage.py check_triger_inspection_request```
+``` 0 0  * * * bash -c "source /home/ubuntu/.virtualenvs/inspection/bin/activate  python /home/ubuntu/inspection-backend/manage.py check_triger_inspection_request" ```
     
