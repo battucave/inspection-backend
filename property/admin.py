@@ -12,7 +12,7 @@ class AdminTenant(admin.ModelAdmin):
 
 class DiscrepancyInline(admin.TabularInline):
     model = Discrepancy
-    
+
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
      inlines = [TenantInline, InspectionInline, DiscrepancyInline]
