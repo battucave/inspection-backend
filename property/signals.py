@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from property.models import Property, Tenant, InspectionSchedule
+from property.models import Property, Tenant, InspectionSchedule, PropertyApplication
 from authapp.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -15,6 +15,13 @@ def Check_user_property_tenant(sender, instance, created, **kwargs):
         if email:
             # get emails and update attach them to user
             tenants = Tenant.objects.filter(email=email).update(user=instance)
+            # make user property applications as approved
+            for tenant in tenants:
+                PropertyApplication.objects.get_or_create(
+                    owner = tenant.property.user,
+                    tenant = tenant.user,
+                    state = "approved",
+                )
 
 
 @receiver(post_save, sender=Tenant)
@@ -29,6 +36,12 @@ def notify_tenant_with_property(sender, instance, created, **kwargs):
                      
                 }
         if user:
+            # create approved django application
+            PropertyApplication.objects.get_or_create(
+                    owner = instance.property.user,
+                    tenant = instance.user,
+                    state = "approved",
+                )
             # notify user to login and check his account in app
             title = f"Inspection360 {instance.property.name} Invitation"
             email_html_message = render_to_string('email/proprty_tenant_user_email.html', context)

@@ -319,6 +319,15 @@ class ListTenantProperties(APIView,CustomSuccessPagination):
         property_serializer = PropertySerializer(results, many=True)
         return self.get_paginated_response(property_serializer.data)
 
+class ListTenantPropertiesnew(APIView,CustomSuccessPagination):
+    permission_classes = (IsAuthenticated,)
+    """Return properties where the request user is an approved tenant"""
+    def get(self,request):
+        properties = Property.objects.filter(property_application__tenant =request.user,property_application__state='approved') 
+        results = self.paginate_queryset(properties, request, view=self)
+        property_serializer = PropertySerializer(results, many=True)
+        return self.get_paginated_response(property_serializer.data)
+
 class RoomOccupancyAPI(APIView):
     # permission_classes = (IsAuthenticated,)
     parser_classes = (MultiPartParser, FormParser,)
