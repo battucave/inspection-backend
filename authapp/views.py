@@ -1,5 +1,5 @@
 from .models import User,VerificationCode
-from .serializers import UserCreateSerializer
+from .serializers import UserCreateSerializer, PasswordResetTokenSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
@@ -23,6 +23,11 @@ from rest_framework_simplejwt.tokens import RefreshToken, SlidingToken, UntypedT
 from rest_framework.parsers import MultiPartParser, FormParser
 if api_settings.BLACKLIST_AFTER_ROTATION:
     from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
+from django_rest_passwordreset.views import (
+    ResetPasswordRequestToken,
+    ResetPasswordConfirm,
+    ResetPasswordValidateToken,
+)
 
 from inspection.permissions import CustomIsAuthenticatedPerm as IsAuthenticated
 from .backends import FirebaseBackend
@@ -266,3 +271,32 @@ class TokenRefreshView(TokenViewBase):
     token if the refresh token is valid.
     """
     serializer_class = jwt_serializers.TokenRefreshSerializer
+
+
+
+class PasswordResetView(ResetPasswordRequestToken):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200:
+            response.data["detail"] = "Password reset e-mail has been sent."
+        return response
+
+
+class PasswordResetConfirmView(ResetPasswordConfirm):
+    serializer_class = PasswordResetTokenSerializer
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200:
+            response.data["detail"] = "Password has been reset successfuly"
+
+        return response
+
+
+class ResetPasswordVerifyToken(ResetPasswordValidateToken):
+    def post(self, request, *args, **kwargs):
+
+        response = super().post(request, *args, **kwargs)
+        return response
+
+

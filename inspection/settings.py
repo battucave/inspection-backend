@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
 
     "dj_rest_auth",
+    'django_rest_passwordreset',
     'django_filters',
     'property',
     'authapp',
