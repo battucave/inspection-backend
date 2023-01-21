@@ -9,19 +9,22 @@ from django.conf import settings
 
 @receiver(post_save, sender=User)
 def Check_user_property_tenant(sender, instance, created, **kwargs):
-    if created:
-        # when user created check if he has assigned properrity or not
-        email = instance.email
-        if email:
-            # get emails and update attach them to user
-            tenants = Tenant.objects.filter(email=email).update(user=instance)
-            # make user property applications as approved
-            for tenant in tenants:
-                PropertyApplication.objects.get_or_create(
-                    owner = tenant.property.user,
-                    tenant = tenant.user,
-                    state = "approved",
-                )
+    
+        if created:
+            # when user created check if he has assigned properrity or not
+            email = instance.email
+            if email:
+                # get emails and update attach them to user
+                tenants = Tenant.objects.filter(email=email)
+                if tenants:
+                  tenants.update(user=instance)
+                # mark user property applications as approved
+                for tenant in tenants:
+                    PropertyApplication.objects.get_or_create(
+                        owner = tenant.property.user,
+                        tenant = tenant.user,
+                        state = "approved",
+                    )
 
 
 @receiver(post_save, sender=Tenant)
