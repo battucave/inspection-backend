@@ -271,7 +271,14 @@ REST_AUTH_SERIALIZERS = {
     # Replace password reset serializer to fix 500 error
     #'USER_DETAILS_SERIALIZER': 'authapp.views.TokenObtainPairSerializer',
 }
-
+# password reset settings ########3
+DJANGO_REST_PASSWORDRESET_TOKEN_CONFIG = {
+    "CLASS": "django_rest_passwordreset.tokens.RandomNumberTokenGenerator",
+    "OPTIONS": {"min_number": 1234, "max_number": 9999},
+}
+DJANGO_REST_PASSWORDRESET_NO_INFORMATION_LEAKAGE = True
+DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME = 1
+######### JWT settings #######
 REST_USE_JWT = True
 JWT_AUTH_COOKIE = 'auth-id'
 SIMPLE_JWT = {
