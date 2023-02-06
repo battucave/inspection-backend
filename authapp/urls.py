@@ -3,7 +3,6 @@ from . import views
 
 
 
-
 #    path('',include('djoser.urls.authtoken')),
 
 urlpatterns = [

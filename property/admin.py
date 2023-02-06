@@ -19,11 +19,28 @@ class DiscrepancyInline(admin.TabularInline):
 class InlineMRequest(admin.TabularInline):
     model = MRequest 
     extra =1
+from django.utils.safestring import mark_safe
+
+class InlineImages(admin.TabularInline):
+    
+    model = PropertyImage 
+    extra =1
+    readonly_fields = ["image_display"]
+
+    def image_display(self, obj):
+        if obj:
+                return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
+                    url = obj.img.image.url,
+                    width="60px",
+                    height="60px",
+                    )
+            )
+        return "-----------"
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
      search_fields = ["name", ]
-     inlines = [TenantInline, InspectionInline, DiscrepancyInline, InlineMRequest]
+     inlines = [TenantInline, InspectionInline, DiscrepancyInline, InlineMRequest, InlineImages]
 
 
 

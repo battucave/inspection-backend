@@ -262,7 +262,8 @@ DEFAULT_FROM_EMAIL = "mike@inspection-360.com"
 
 
 DJOSER={
-'SEND_ACTIVATION_EMAIL': False,
+'SEND_ACTIVATION_EMAIL': True,
+'SEND_CONFIRMATION_EMAIL':True,
 'SERIALIZERS':{
     'user':'authapp.serializers.UserCreateSerializer',
     'current_user':'authapp.serializers.UserCreateSerializer'
