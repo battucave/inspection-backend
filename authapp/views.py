@@ -199,9 +199,10 @@ class TokenObtainSerializer(serializers.Serializer):
         try:
             authenticate_kwargs["request"] = self.context["request"]
         except KeyError:
-            pass
+            print("request not found")
 
         self.user = authenticate(**authenticate_kwargs)
+        print("self usersss", self.user)
         if not self.user:
             return {'success':False,'error':True,'msg':'Authentication failed','data':{}}
         else:
@@ -233,8 +234,12 @@ class TokenObtainPairSerializer(TokenObtainSerializer):
             return {'success':False,'error':True,'msg':'Authentication failed','data':{}}
         
 
+
+
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = TokenObtainPairSerializer
+
+
 from rest_framework import generics, status
 
 from rest_framework_simplejwt.authentication import AUTH_HEADER_TYPES
