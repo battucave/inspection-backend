@@ -18,6 +18,7 @@ from inspection.pagination import CustomSuccessPagination
 from datetime import date, timedelta, datetime
 from django.utils import timezone
 import pytz
+from django.utils.timezone import make_aware
 
 class ReportView(APIView):
     parser_classes = [MultiPartParser, FormParser]
@@ -150,4 +151,4 @@ class ListReportsByProperty(generics.ListAPIView):
         except property.DoesNotExist:
             return Response({'success':False,'error':True,'msg':'Property not found','data':{}},status=status.HTTP_200_OK)
 
-        return Report.objects.filter(property=property, created_at__gte=timezone.now()-timedelta(days=3))
+        return Report.objects.filter(property=property, created_at__gte=make_aware(datetime.now()-timedelta(days=3)))
