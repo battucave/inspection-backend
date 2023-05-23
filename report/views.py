@@ -3,6 +3,8 @@ from django.http import Http404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
+
+from property.models import Property
 from .serializers import ReportSerializer
 from .models import Report
 from authapp.models import User
@@ -12,6 +14,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from inspection.permissions import CustomIsAuthenticatedPerm as IsAuthenticated
 from inspection.pagination import CustomSuccessPagination
+
+from datetime import date, timedelta, datetime
 class ReportView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     serializer_class = ReportSerializer
@@ -128,3 +132,19 @@ class ListReports(generics.ListAPIView):
     queryset = Report.objects.all()
     pagination_class = CustomSuccessPagination
 
+
+class ListReportsByProperty(generics.ListAPIView):
+    """Return all the reports"""
+    serializer_class = ReportSerializer
+    filter_backends = [DjangoFilterBackend]
+    permission_classes = (IsAuthenticated,)
+    pagination_class = CustomSuccessPagination
+
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        try:
+            property = Property.objects.get(pk=pk)
+        except property.DoesNotExist:
+            return Response({'success':False,'error':True,'msg':'Property not found','data':{}},status=status.HTTP_200_OK)
+
+        return Report.objects.filter(property=property, created_at__gte=datetime.now()-timedelta(days=3))

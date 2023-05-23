@@ -1,6 +1,6 @@
 from django.db import models
 from authapp.models import User
-
+from datetime import datetime
 
 class Report(models.Model):
     """
@@ -15,6 +15,7 @@ class Report(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True)
     item_returned_user = models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True,related_name="report_item_returned_user")
     returned = models.BooleanField(default= False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
