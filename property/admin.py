@@ -46,7 +46,6 @@ class PropertyAdmin(admin.ModelAdmin):
 
 admin.site.register(Tenant, AdminTenant)
 
-admin.site.register(Property)
 admin.site.register(PropertyApplication)
 
 admin.site.register(PropertyImage)
