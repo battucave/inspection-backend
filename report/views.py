@@ -147,4 +147,4 @@ class ListReportsByProperty(generics.ListAPIView):
         except property.DoesNotExist:
             return Response({'success':False,'error':True,'msg':'Property not found','data':{}},status=status.HTTP_200_OK)
 
-        return Report.objects.filter(property=property, created_at__gte=datetime.now()-timedelta(days=3))
+        return Report.objects.filter(property=property, created_at__gte=datetime.utcnow()-timedelta(days=3))
