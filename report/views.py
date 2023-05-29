@@ -30,10 +30,17 @@ class ReportView(APIView):
             return Report.objects.get(pk=pk)
         except Report.DoesNotExist:
             return Response({'success':False,'error':True,'msg':'Report not found','data':{}},status=status.HTTP_200_OK)
+        
+    def get_property(self, pk):
+        try:
+            return Property.objects.get(pk=pk)
+        except Property.DoesNotExist:
+            return Response({'success':False,'error':True,'msg':'Property not found','data':{}},status=status.HTTP_200_OK)
 
 
     def post(self, request):
-        serializer = ReportSerializer(data=request.data)
+        property = self.get_property(request.data.get('property'))
+        serializer = ReportSerializer(property=property, data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response({'success':True,'error':False,'msg':'Report created','data':serializer.data},status=status.HTTP_201_CREATED)

@@ -16,6 +16,7 @@ class Report(models.Model):
     item_returned_user = models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True,related_name="report_item_returned_user")
     returned = models.BooleanField(default= False)
     created_at = models.DateTimeField(auto_now_add=True)
+    property = models.ForeignKey('property.Property',on_delete=models.CASCADE,blank=True,null=True)
 
     def __str__(self):
         return self.name
