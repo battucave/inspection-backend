@@ -7,7 +7,6 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('property', '0032_alter_inspectionschedule_last_triggered_and_more'),
         ('report', '0008_report_created_at'),
     ]
 
