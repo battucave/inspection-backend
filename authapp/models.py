@@ -7,6 +7,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 import random
 import datetime
+import django.utils.timezone
 
 JOB_ROLES = [
     ("owner", "owner"),
@@ -99,7 +100,7 @@ class VerificationCode(models.Model):
         super(VerificationCode, self).save(*args, **kwargs)
     
     def expired(self):
-        return datetime.datetime.now()>=self.expiry
+        return django.utils.timezone.now>=self.created+datetime.timedelta(minutes=VERIFICATION_EXPIRY)
     
     
 
