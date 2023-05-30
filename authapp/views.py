@@ -162,7 +162,7 @@ class RefreshVerifyCode(APIView):
     """Check that verify code is correct"""
     permission_classes = (IsAuthenticated,)
     def get(self, request):
-        VerificationCode.objects.create(user=request.user)
+        VerificationCode.objects.create(user=request.user, code="".join([str(random.randint(0,9)) for i in range(4)]))
         return Response({'success':True,'error':False,'msg':'Refresh code generated','data':{'result':True}},status=status.HTTP_201_CREATED)
         
 

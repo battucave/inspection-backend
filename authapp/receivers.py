@@ -1,7 +1,8 @@
+import random
 from django.dispatch import receiver
 from authapp.models import User,VerificationCode
 from django.dispatch import receiver
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -9,7 +10,7 @@ from django.core.mail import EmailMultiAlternatives
 
 
 
-@receiver(post_save, sender=VerificationCode)
+@receiver(pre_save, sender=VerificationCode)
 def send_verification_email(sender, instance, **kwargs):
     user = instance.user
     to_ = user.email
@@ -38,7 +39,7 @@ def send_verification_email(sender, instance, **kwargs):
     except:
         pass
 
-@receiver(post_save, sender=User)
+@receiver(pre_save, sender=User)
 def generate_verification_code(sender, instance, **kwargs):
     has_code = VerificationCode.objects.filter(user=instance).last()
     codes = []
@@ -46,9 +47,9 @@ def generate_verification_code(sender, instance, **kwargs):
         if not i.expired():
             codes.append(i)
     print(has_code, codes)
-    if not instance.is_verified and (len(codes) == 0 or has_code is None or (has_code and has_code.expired())):
+    if not instance.is_verified and not has_code:
         print('In coditions')
-        VerificationCode.objects.create(user=instance)
+        VerificationCode.objects.create(user=instance, code="".join([str(random.randint(0,9)) for i in range(4)]))
     
 
 
