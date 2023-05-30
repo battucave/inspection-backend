@@ -45,7 +45,7 @@ def generate_verification_code(sender, instance, **kwargs):
     for i in VerificationCode.objects.filter(user=instance):
         if not i.expired():
             codes.append(i)
-    print(has_code, codes, has_code.expired())
+    print(has_code, codes)
     if not instance.is_verified and len(codes) == 0 and (not has_code or (has_code and has_code.expired())):
         VerificationCode.objects.create(user=instance)
     
