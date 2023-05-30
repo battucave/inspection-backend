@@ -145,9 +145,11 @@ class VerifyCode(APIView):
     
     def post(self, request):
         code = request.data['code']
+        print(code)
         request_user_code = VerificationCode.objects.filter(user=request.user).last()
         #request_user_code = VerificationCode.objects.last()
         if request_user_code and code: 
+            print(request_user_code.code, code)
             code_ = request_user_code.code
             if code_ == code:
                 #user = User.objects.get(email=request.user)
