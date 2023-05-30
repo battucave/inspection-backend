@@ -100,7 +100,7 @@ class VerificationCode(models.Model):
         super(VerificationCode, self).save(*args, **kwargs)
     
     def expired(self):
-        return django.utils.timezone.now>=self.created+datetime.timedelta(minutes=VERIFICATION_EXPIRY)
+        return django.utils.timezone.now() >= self.created+datetime.timedelta(minutes=VERIFICATION_EXPIRY)
     
     
 
