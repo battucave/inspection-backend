@@ -10,7 +10,7 @@ from django.core.mail import EmailMultiAlternatives
 
 
 
-@receiver(pre_save, sender=VerificationCode)
+@receiver(post_save, sender=VerificationCode)
 def send_verification_email(sender, instance, **kwargs):
     user = instance.user
     to_ = user.email
