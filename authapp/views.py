@@ -1,3 +1,4 @@
+import random
 from .models import User,VerificationCode
 from .serializers import UserCreateSerializer, PasswordResetTokenSerializer
 from rest_framework.decorators import api_view, permission_classes
