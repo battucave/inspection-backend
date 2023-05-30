@@ -41,9 +41,12 @@ def send_verification_email(sender, instance, **kwargs):
 @receiver(post_save, sender=User)
 def generate_verification_code(sender, instance, **kwargs):
     has_code = VerificationCode.objects.filter(user=instance).last()
-    codes = len([i for i in VerificationCode.objects.filter(user=instance) if not i.expired])
+    codes = []
+    for i in VerificationCode.objects.filter(user=instance):
+        if not i.expired():
+            codes.append(i)
     print(has_code, codes, has_code.expired)
-    if not instance.is_verified and codes == 0 and (not has_code or (has_code and has_code.expired)):
+    if not instance.is_verified and len(codes) == 0 and (not has_code or (has_code and has_code.expired())):
         VerificationCode.objects.create(user=instance)
     
 
