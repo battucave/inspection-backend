@@ -93,7 +93,7 @@ class VerificationCode(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     code = models.CharField(max_length=10)
     created = models.DateTimeField(auto_now_add=True)
-    expiry = models.DateTimeField(default=datetime.datetime.now()+datetime.timedelta(minutes=VERIFICATION_EXPIRY))
+    # expiry = models.DateTimeField(default=datetime.datetime.now()+datetime.timedelta(minutes=VERIFICATION_EXPIRY))
 
     def save(self, *args, **kwargs):
         self.code = "".join([str(random.randint(0,9)) for i in range(4)])
