@@ -39,7 +39,7 @@ def send_verification_email(sender, instance, **kwargs):
     except:
         pass
 
-@receiver(pre_save, sender=User)
+@receiver(post_save, sender=User)
 def generate_verification_code(sender, instance, **kwargs):
     try:
         has_code = VerificationCode.objects.filter(user=instance).last()
