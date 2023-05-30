@@ -42,9 +42,8 @@ def send_verification_email(sender, instance, **kwargs):
 @receiver(pre_save, sender=User)
 def generate_verification_code(sender, instance, **kwargs):
     has_code = VerificationCode.objects.filter(user=instance).last()
-    if not instance.is_verified and not has_code:
-        print('In coditions')
-        VerificationCode.objects.create(user=instance, code="".join([str(random.randint(0,9)) for i in range(4)]))
+    if not instance.is_verified and (not has_code or has_code.expired()):
+        VerificationCode.objects.create(user=instance)
     
 
 
