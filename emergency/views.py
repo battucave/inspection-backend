@@ -3,6 +3,8 @@ from django.http import Http404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
+
+from property.models import Property, Tenant
 from .serializers import EmergencySerializer
 from .models import Emergency
 from authapp.models import User
@@ -85,7 +87,20 @@ class ListUserEmergency(APIView, CustomSuccessPagination):
     
 
     def get(self,request):
-        emergency = Emergency.objects.filter(user=request.user)
+        try:
+            tenant = Tenant.objects.get(user=request.user)
+        except:
+            tenant = None
+
+        tenant_properties_owners = []
+        if tenant is not None:
+            tenant_properties = Property.objects.filter(property_application__tenant=request.user, property_application__state='approved')
+            for property in tenant_properties:
+                tenant_properties_owners.append(property.user.pk)
+            emergency = Emergency.objects.filter(user__id__in=tenant_properties_owners)
+        else:
+            emergency = Emergency.objects.filter(user=request.user)
+
         results = self.paginate_queryset(emergency, request, view=self)
         property_serializer = EmergencySerializer(results, many=True)
         return self.get_paginated_response(property_serializer.data)
