@@ -89,15 +89,20 @@ class ListUserEmergency(APIView, CustomSuccessPagination):
     def get(self,request):
         try:
             tenant = Tenant.objects.get(user=request.user)
+            print(tenant)
         except:
+            print('tenant not found')
             tenant = None
 
         tenant_properties_owners = []
         if tenant is not None:
             tenant_properties = Property.objects.filter(property_application__tenant=request.user, property_application__state='approved')
+            print(tenant_properties)
             for property in tenant_properties:
                 tenant_properties_owners.append(property.user.pk)
+            print(tenant_properties_owners)
             emergency = Emergency.objects.filter(user__id__in=tenant_properties_owners)
+            print(emergency)
         else:
             emergency = Emergency.objects.filter(user=request.user)
 
