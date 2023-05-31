@@ -50,7 +50,7 @@ class Property(models.Model):
     
 class Tenant(models.Model):
     email = models.EmailField(verbose_name="Email")
-    user = models.ForeignKey(User,on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.ForeignKey(User,on_delete=models.CASCADE, null=True, blank=True)
     property = models.ForeignKey(to=Property, on_delete=models.CASCADE)
 
     # class Meta:

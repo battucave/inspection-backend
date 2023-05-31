@@ -88,7 +88,7 @@ class ListUserEmergency(APIView, CustomSuccessPagination):
 
     def get(self,request):
         try:
-            tenant = Tenant.objects.get(user=request.user)
+            tenant = Tenant.objects.get(email=request.user.email)
             print(tenant)
         except:
             print('tenant not found')

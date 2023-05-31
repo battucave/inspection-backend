@@ -8,6 +8,8 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 
+from property.models import Tenant
+
 
 
 @receiver(post_save, sender=VerificationCode)
@@ -41,6 +43,15 @@ def send_verification_email(sender, instance, **kwargs):
 
 @receiver(post_save, sender=User)
 def generate_verification_code(sender, instance, **kwargs):
+    try:
+        user_tenants = Tenant.objects.filter(email=instance.email, user=None)
+        for user_tenant in user_tenants:
+            user_tenant.user = instance
+            user_tenant.save()
+    except Exception as e:
+        print(e)
+        pass
+
     try:
         has_code = VerificationCode.objects.filter(user=instance).last()
         if not instance.is_verified and (not has_code or (has_code.expired() if has_code else True)):
