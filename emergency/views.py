@@ -87,25 +87,19 @@ class ListUserEmergency(APIView, CustomSuccessPagination):
     
 
     def get(self,request):
-        try:
-            tenant = Tenant.objects.get(email=request.user.email)
-            print(tenant)
-        except:
-            print(request.user.email)
-            print('tenant not found')
-            tenant = None
-
         tenant_properties_owners = []
-        if tenant is not None:
-            tenant_properties = Property.objects.filter(property_application__tenant=request.user, property_application__state='approved')
-            print(tenant_properties)
-            for property in tenant_properties:
-                tenant_properties_owners.append(property.user.pk)
-            print(tenant_properties_owners)
+        tenant_properties = Property.objects.filter(property_application__tenant=request.user, property_application__state='approved')
+        print(tenant_properties)
+        for property in tenant_properties:
+            tenant_properties_owners.append(property.user.pk)
+        print(tenant_properties_owners)
+        
+        if len(tenant_properties_owners) > 0:
+            print('Is tenant')
             emergency = Emergency.objects.filter(user__id__in=tenant_properties_owners)
-            print(emergency)
         else:
             emergency = Emergency.objects.filter(user=request.user)
+        print(emergency)
 
         results = self.paginate_queryset(emergency, request, view=self)
         property_serializer = EmergencySerializer(results, many=True)
