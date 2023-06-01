@@ -40,9 +40,9 @@ class ReportView(APIView):
 
     def post(self, request):
         property = self.get_property(request.data.get('property'))
-        serializer = ReportSerializer(property=property, data=request.data)
+        serializer = ReportSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user)
+            serializer.save(property=property, user=request.user)
             return Response({'success':True,'error':False,'msg':'Report created','data':serializer.data},status=status.HTTP_201_CREATED)
     
         return Response({'success':False,'error':True,'msg':'Error creating Report','data':serializer.errors},status=status.HTTP_200_OK)
