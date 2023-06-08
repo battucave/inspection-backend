@@ -29,6 +29,7 @@ urlpatterns = [
     path('property-discrepancies/',views.ListDiscrepency.as_view()),
     path('room-occupancy/',views.RoomOccupancyAPI.as_view()),
     path('room-occupancy/all/',views.ListRoomOccupancys.as_view()),
+    path('room-occupancy/occupied/',views.ListRoomOccupancysOccupied.as_view()),
     path('room-occupancy/<str:id>/',views.RoomOccupancyAPI.as_view()),
     path('check-in-room/<str:id>/section/',views.CheckInAndSection.as_view()),
     path('check-out-room/<str:id>/section/',views.CheckOutAndSection.as_view()),

@@ -369,11 +369,20 @@ class RoomOccupancyAPI(APIView):
 
 class ListRoomOccupancys(generics.ListAPIView):
     # permission_classes = (IsAuthenticated,)
-    queryset = (RoomOccupancy.objects.annotate(num_check_in_images=Count('check_in_images'), num_check_out_images=Count('check_out_images'))).all()
+    queryset = RoomOccupancy.objects.annotate(num_check_in_images=Count('check_in_images'), num_check_out_images=Count('check_out_images'))
     print(queryset[0])
     serializer_class = ListRoomOccupancySerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['tenant__id', 'property__id', 'room__id', 'num_check_in_images__gte', 'num_check_out_images__lte']
+    filterset_fields = ['tenant__id', 'property__id', 'room__id']
+    pagination_class = CustomSuccessPagination
+
+class ListRoomOccupancysOccupied(generics.ListAPIView):
+    # permission_classes = (IsAuthenticated,)
+    queryset = RoomOccupancy.objects.annotate(num_check_in_images=Count('check_in_images'), num_check_out_images=Count('check_out_images')).filter(num_check_in_images__gte=1, num_check_out_images__lte=0)
+    print(queryset)
+    serializer_class = ListRoomOccupancySerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['tenant__id', 'property__id', 'room__id']
     pagination_class = CustomSuccessPagination
 
 class SectionAPI(APIView):
