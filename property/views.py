@@ -370,7 +370,7 @@ class RoomOccupancyAPI(APIView):
 class ListRoomOccupancys(generics.ListAPIView):
     # permission_classes = (IsAuthenticated,)
     queryset = (RoomOccupancy.objects.annotate(num_check_in_images=Count('check_in_images'), num_check_out_images=Count('check_out_images'))).all()
-    print(queryset)
+    print(queryset[0])
     serializer_class = ListRoomOccupancySerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['tenant__id', 'property__id', 'room__id', 'num_check_in_images__gte', 'num_check_out_images__lte']
