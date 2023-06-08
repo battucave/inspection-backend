@@ -372,7 +372,7 @@ class ListRoomOccupancys(generics.ListAPIView):
     queryset = (RoomOccupancy.objects.annotate(num_check_in_images=Count('check_in_images'), num_check_out_images=Count('check_out_images'))).all()
     serializer_class = ListRoomOccupancySerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['tenant__id', 'property__id', 'room__id', 'num_check_in_images__gte', 'num_check_out_images']
+    filterset_fields = ['tenant__id', 'property__id', 'room__id', 'num_check_in_images__gte', 'num_check_out_images__lte']
     pagination_class = CustomSuccessPagination
 
 class SectionAPI(APIView):
