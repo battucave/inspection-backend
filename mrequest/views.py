@@ -34,7 +34,7 @@ class RequestView(APIView):
             property = Property.objects.get(pk=pk)
         except:
             return Response({'success':False,'error':True,'msg':'Property not found','data':{}},status=status.HTTP_200_OK)
-        if property.property_application.filter(tenant =request.user,state='approved'):
+        if property.property_application.filter(tenant =request.user,state='approved') or property.owner == request.user:
             serializer = MRequestSerializer(data=request.data)
         else:
             return Response({'success':False,'error':True,'msg':'You are not authorized to perform this action','data':{}},status=status.HTTP_200_OK)
