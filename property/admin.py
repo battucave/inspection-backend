@@ -58,6 +58,11 @@ admin.site.register(RoomImage)
 
 admin.site.register(Image)
 
+admin.site.register(RoomOccupancy)
+admin.site.register(CheckInRoomSection)
+admin.site.register(CheckOutRoomSection)
+admin.site.register(Section)
+
 
 
 
