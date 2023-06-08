@@ -21,6 +21,7 @@ from rest_framework.viewsets import ModelViewSet
 from django.shortcuts import get_object_or_404
 from inspection.permissions import CustomIsAuthenticatedPerm as IsAuthenticated
 from inspection.pagination import CustomSuccessPagination
+from django.db.models import Count
 
 class NewProperty(APIView):
     """Create single property"""
@@ -368,10 +369,10 @@ class RoomOccupancyAPI(APIView):
 
 class ListRoomOccupancys(generics.ListAPIView):
     # permission_classes = (IsAuthenticated,)
-    queryset = RoomOccupancy.objects.all()
+    queryset = RoomOccupancy.objects.annotate(num_check_in_images=Count('check_in_images'), num_check_out_images=Count('check_out_images'))
     serializer_class = ListRoomOccupancySerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['tenant__id', 'property__id', 'room__id']
+    filterset_fields = ['tenant__id', 'property__id', 'room__id', 'num_check_in_images__gte', 'num_check_out_images']
     pagination_class = CustomSuccessPagination
 
 class SectionAPI(APIView):
