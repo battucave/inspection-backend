@@ -17,12 +17,13 @@ def Check_user_property_tenant(sender, instance, created, **kwargs):
                 # get emails and update attach them to user
                 tenants = Tenant.objects.filter(email=email)
                 if tenants:
-                  tenants.update(user=instance)
+                    tenants.update(user=instance)
                 # mark user property applications as approved
                 for tenant in tenants:
                     PropertyApplication.objects.get_or_create(
                         owner = tenant.property.user,
                         tenant = tenant.user,
+                        property = tenant.property,
                         state = "approved",
                     )
 
