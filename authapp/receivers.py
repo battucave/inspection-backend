@@ -8,7 +8,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 
-from property.models import Tenant
+from property.models import PropertyApplication, Tenant
 
 
 
@@ -46,8 +46,15 @@ def generate_verification_code(sender, instance, **kwargs):
     try:
         user_tenants = Tenant.objects.filter(email=instance.email, user=None)
         for user_tenant in user_tenants:
-            user_tenant.user = instance
-            user_tenant.save()
+            if user_tenant.user is None:
+                PropertyApplication.objects.get_or_create(
+                    owner = user_tenant.property.user,
+                    tenant = instance,
+                    property = user_tenant.property,
+                    state = "approved",
+                )
+                user_tenant.user = instance
+                user_tenant.save()
     except Exception as e:
         print(e)
         pass

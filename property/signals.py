@@ -43,6 +43,7 @@ def notify_tenant_with_property(sender, instance, created, **kwargs):
             PropertyApplication.objects.get_or_create(
                     owner = instance.property.user,
                     tenant = instance.user,
+                    property = instance.property,
                     state = "approved",
                 )
             # notify user to login and check his account in app
