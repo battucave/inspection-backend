@@ -44,6 +44,14 @@ def send_verification_email(sender, instance, **kwargs):
 @receiver(post_save, sender=User)
 def generate_verification_code(sender, instance, **kwargs):
     try:
+        has_code = VerificationCode.objects.filter(user=instance).last()
+        if not instance.is_verified and (not has_code or (has_code.expired() if has_code else True)):
+            VerificationCode.objects.create(user=instance)
+    except Exception as e:
+        print(e)
+        raise e
+    
+    try:
         user_tenants = Tenant.objects.filter(email=instance.email, user=None)
         for user_tenant in user_tenants:
             if user_tenant.user is None:
@@ -58,16 +66,6 @@ def generate_verification_code(sender, instance, **kwargs):
     except Exception as e:
         print(e)
         pass
-
-    try:
-        has_code = VerificationCode.objects.filter(user=instance).last()
-        if not instance.is_verified and (not has_code or (has_code.expired() if has_code else True)):
-            VerificationCode.objects.create(user=instance)
-    except Exception as e:
-        print(e)
-        raise e
-    
-
 
 from django_rest_passwordreset.signals import reset_password_token_created
 
